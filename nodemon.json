@@ -1,8 +1,12 @@
 {
-    "execMap": {
-        "watch": ["src"],
-        "ts": "ts-node",
-        "exec": "npx ts-node ./src/index.ts",
-        "ext": ".ts, .js"
-    }
+
+    "restartable": "rs",
+    "watch": ["src"],
+    "ext": "ts, json",
+    "ignore": [
+        ".git",
+        "node_modules/**/node_modules",
+        "*.test.ts"
+    ],
+    "exec": "ts-node-esm --experimental-specifier-resolution=node ./src/index"
 }

@@ -4,7 +4,6 @@
     "description": "",
     "main": "src/index.ts",
     "type": "module",
-    "module": "es6",
     "dependencies": {
         "dotenv": "^8.2.0",
         "nodemon": "^2.0.20",
@@ -12,6 +11,7 @@
     },
     "devDependencies": {
         "@types/node": "^14.18.35",
+        "@types/uuid": "^9.0.0",
         "@typescript-eslint/eslint-plugin": "^4.15.1",
         "@typescript-eslint/parser": "^4.15.1",
         "eslint": "^7.32.0",
@@ -23,8 +23,9 @@
     },
     "scripts": {
         "lint": "eslint ./src",
-        "start:dev": "npx -r ts-node/register ./src/index.ts",
-        "start:watch": "npx nodemon"
+        "build": "tsc",
+        "start:dev": "nodemon",
+        "start:prod": "tsc && nodemon ./dist/index.js"
     },
     "repository": {
         "type": "git",

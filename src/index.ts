@@ -1,14 +1,13 @@
 import { env } from 'process';
 import * as dotenv from 'dotenv';
 import { createServer } from 'http';
+import { Router } from './router';
 
 dotenv.config();
 
-const requestListener = (_, res): void => {
-    res.writeHead(200);
-    res.end(`My first server!`);
-};
+const router = new Router();
 
-const server = createServer(requestListener);
-
-server.listen({ port: env.PORT || 3000 }, () => console.log(`🚀 Server ready`));
+createServer(router.requestListener).listen(
+    { port: env.MAIN_PORT || 3000 }, 
+    () => console.log('🚀 Server ready')
+);

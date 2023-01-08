@@ -1,10 +1,14 @@
 {
   "compilerOptions": {
-    "types": ["node"],
-    "module": "ES6",
-    "target": "es6",
-    "rootDir": "./src",
+    "target": "ES2022",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "ESNext",
     "moduleResolution": "node",
+    "strictPropertyInitialization": false,
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "strict": true,
     "esModuleInterop": true,
     "sourceMap": true,
     "resolveJsonModule": true,
