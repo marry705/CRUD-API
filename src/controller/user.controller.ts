@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { User } from '../entities';
 import { IUserService, UserService } from '../services';
-import { ErrorHandler, ErrorMessages, httpStatusCodes, ResponsHandler } from '../services/serverResponse';
+import { ErrorHandler, ErrorMessages, httpStatusCodes, ResponseHandler } from '../services/serverResponse';
 
 export interface IUserController {
     getAll: (req: IncomingMessage, res: ServerResponse) => void,
@@ -22,7 +22,7 @@ export class UserController implements IUserController {
         try {
             const users = this.userService.getAll();
 
-            ResponsHandler(res, httpStatusCodes.OK, users);
+            ResponseHandler(res, httpStatusCodes.OK, users);
         } catch(error) {
             throw error;
         }
@@ -40,7 +40,7 @@ export class UserController implements IUserController {
 
             const user = this.userService.getById(userId!);
 
-            ResponsHandler(res, httpStatusCodes.OK, user);
+            ResponseHandler(res, httpStatusCodes.OK, user);
         } catch(error) {
             ErrorHandler(error as Error, res);
         }
@@ -58,7 +58,7 @@ export class UserController implements IUserController {
 
             this.userService.delete(userId!);
 
-            ResponsHandler(res, httpStatusCodes.OK, { message: 'User was removed.' });
+            ResponseHandler(res, httpStatusCodes.OK, { message: 'User was removed.' });
         } catch(error) {
             ErrorHandler(error as Error, res);
         }
@@ -80,9 +80,13 @@ export class UserController implements IUserController {
 
             const { username, age, hobbies } = JSON.parse(data!);
 
-            const user = this.userService.update(new User({ id: userId, username, age, hobbies }));
+            if (!this.userService.isValidData(username, age, hobbies)) {
+                throw new Error(ErrorMessages.USER_NOT_VALID_DATA);
+            };
 
-            ResponsHandler(res, httpStatusCodes.OK, user);
+            const user = this.userService.update({ id: userId!, username, age, hobbies });
+
+            ResponseHandler(res, httpStatusCodes.OK, user);
         } catch(error) {
             ErrorHandler(error as Error, res);
         }
@@ -96,13 +100,13 @@ export class UserController implements IUserController {
 
             const { username, age, hobbies } = JSON.parse(data!);
 
-            if (!username || !age || !hobbies) {
+            if (!this.userService.isValidData(username, age, hobbies)) {
                 throw new Error(ErrorMessages.USER_NOT_VALID_DATA);
             };
 
             const user = this.userService.create(new User({ username, age, hobbies }));
 
-            ResponsHandler(res, httpStatusCodes.OK, user);
+            ResponseHandler(res, httpStatusCodes.OK, user);
         } catch(error) {
             ErrorHandler(error as Error, res);
         }

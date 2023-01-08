@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { IUserController, UserController } from '../controller';
-import { ErrorHandler, ErrorMessages, RequsetHeaders } from '../services';
+import { ErrorHandler, ErrorMessages, RequestHeaders } from '../services';
 
 export class Router {
     private readonly userController: IUserController;
@@ -19,7 +19,7 @@ export class Router {
                 throw new Error(ErrorMessages.NOT_VALID_URL);
             };
 
-            if (!(headers['content-type'] === RequsetHeaders['content-Type'])) {
+            if (!(headers['content-type'] === RequestHeaders['content-Type'])) {
                 throw new Error(ErrorMessages.NOT_VALID_HEADERS);
             };
 

@@ -18,33 +18,33 @@ export const ErrorMessages = {
     SERVER_ERROR: 'There is a tech error.',
 };
 
-export const RequsetHeaders = {
+export const RequestHeaders = {
     'content-Type': 'application/json',
 };
 
 export const ErrorHandler = (error: Error, res: ServerResponse): void => {
     if (error.message === ErrorMessages.NOT_VALID_URL) {
-        res.writeHead(httpStatusCodes.NOT_FOUND, RequsetHeaders);
+        res.writeHead(httpStatusCodes.NOT_FOUND, RequestHeaders);
         res.end(JSON.stringify({ message: error.message }));
     } else if (error.message === ErrorMessages.USER_NOT_FOUND) {
-        res.writeHead(httpStatusCodes.NOT_FOUND, RequsetHeaders);
+        res.writeHead(httpStatusCodes.NOT_FOUND, RequestHeaders);
         res.end(JSON.stringify({ message: error.message }));
     } else if (error.message === ErrorMessages.USER_NOT_VALID_ID) {
-        res.writeHead(httpStatusCodes.BAD_REQUEST, RequsetHeaders);
+        res.writeHead(httpStatusCodes.BAD_REQUEST, RequestHeaders);
         res.end(JSON.stringify({ message: error.message }));
     } else if (error.message === ErrorMessages.USER_NOT_VALID_DATA) {
-        res.writeHead(httpStatusCodes.BAD_REQUEST, RequsetHeaders);
+        res.writeHead(httpStatusCodes.BAD_REQUEST, RequestHeaders);
         res.end(JSON.stringify({ message: error.message }));
     } else if (error.message === ErrorMessages.NOT_VALID_HEADERS) {
-        res.writeHead(httpStatusCodes.BAD_REQUEST, RequsetHeaders);
+        res.writeHead(httpStatusCodes.BAD_REQUEST, RequestHeaders);
         res.end(JSON.stringify({ message: error.message }));
     } else {
-        res.writeHead(httpStatusCodes.INTERNAL_SERVER_ERROR, RequsetHeaders);
+        res.writeHead(httpStatusCodes.INTERNAL_SERVER_ERROR, RequestHeaders);
         res.end(JSON.stringify({ message: ErrorMessages.SERVER_ERROR }));
     }
 };
 
-export const ResponsHandler = (res: ServerResponse, statusCodes: httpStatusCodes, data: Object): void => {
-    res.writeHead(statusCodes, RequsetHeaders);
+export const ResponseHandler = (res: ServerResponse, statusCodes: httpStatusCodes, data: Object): void => {
+    res.writeHead(statusCodes, RequestHeaders);
     res.end(JSON.stringify(data));
 };

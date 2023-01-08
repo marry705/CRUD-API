@@ -5,17 +5,21 @@ export interface IUser {
     readonly username: string,
     readonly age: number,
     readonly hobbies: string[],
-    update: (args: UpdateArgs) => void,
-}
+    update: (args: UpdateUserArgs) => void,
+};
 
-export type UpdateArgs = {
+export type UpdateUserArgs = {
     readonly username: string; 
     readonly age: number; 
     readonly hobbies: string[];
 };
 
-type CreateArgs = UpdateArgs & {
+type CreateArgs = UpdateUserArgs & {
     readonly id?: string;
+};
+
+export type UpdateArgs = Partial<Pick<UpdateUserArgs, 'age' | 'hobbies' | 'username'>> & {
+    readonly id: string;
 };
 
 export class User implements IUser{
@@ -32,7 +36,7 @@ export class User implements IUser{
         this.hobbies = [...hobbies];
     };
 
-    update ({ username, age, hobbies }: UpdateArgs): void {
+    update ({ username, age, hobbies }: UpdateUserArgs): void {
         this.username = username;
         this.age = age;
         this.hobbies = [...hobbies];

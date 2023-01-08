@@ -1,4 +1,4 @@
-import { IUser } from '../entities';
+import { IUser, UpdateArgs, User } from '../entities';
 import { Store } from '../store';
 import { validate } from 'uuid';
 
@@ -6,9 +6,10 @@ export interface IUserService {
     getAll: () => IUser[],
     getById: (userId: string) => IUser,
     create: (user: IUser) => IUser,
-    update: (userForUpdate: IUser) => IUser,
+    update: (userForUpdate: UpdateArgs) => IUser,
     delete: (userId: string) => void,
     isIdValid: (userId?: string) => boolean,
+    isValidData: (username?: any, age?: any, hobbies?: any) => boolean,
 };
 
 export class UserService implements IUserService {
@@ -16,6 +17,12 @@ export class UserService implements IUserService {
 
     constructor() {
         this.store = Store.getInstance();
+    };
+
+    public isValidData (username?: any, age?: any, hobbies?: any): boolean {
+        return username && typeof username === 'string' &&
+            age && typeof age === 'number' &&
+            hobbies && Array.isArray(hobbies);
     };
 
     public isIdValid (userId?: string): boolean {
@@ -52,10 +59,16 @@ export class UserService implements IUserService {
         }
     };
 
-    public update(userForUpdate: IUser): IUser {
+    public update(userData: UpdateArgs): IUser {
         try {
-            this.store.getByID(userForUpdate.id);
-            const updatedUser = this.store.update(userForUpdate);
+            const oldUser = this.store.getByID(userData.id);
+
+            const updatedUser = this.store.update(new User({
+                id: userData.id,
+                username: userData.username || oldUser.username,
+                age: userData.age || oldUser.age,
+                hobbies: userData.hobbies || oldUser.hobbies,
+            }));
 
             return updatedUser;
         } catch(error) {
