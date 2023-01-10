@@ -3,11 +3,11 @@ import { Store } from '../store';
 import { validate } from 'uuid';
 
 export interface IUserService {
-    getAll: () => IUser[],
-    getById: (userId: string) => IUser,
-    create: (user: IUser) => IUser,
-    update: (userForUpdate: UpdateArgs) => IUser,
-    delete: (userId: string) => void,
+    getAll: () => Promise<IUser[]>,
+    getById: (userId: string) => Promise<IUser>,
+    create: (user: IUser) => Promise<IUser>,
+    update: (userForUpdate: UpdateArgs) => Promise<IUser>,
+    delete: (userId: string) => Promise<void>,
     isIdValid: (userId?: string) => boolean,
     isValidData: (username?: any, age?: any, hobbies?: any) => boolean,
 };
@@ -29,58 +29,38 @@ export class UserService implements IUserService {
         return !userId ? false : validate(userId);
     };
 
-    public getAll(): IUser[] {
-        try {
-            const users = this.store.getAll();
-
-            return users;
-        } catch(error) {
-            throw error;
-        }
+    public async getAll(): Promise<IUser[]> {
+        return await this.store.getAll();
     };
 
-    public getById(userId: string): IUser {
-        try {
-            const user = this.store.getByID(userId);
-
-            return user;
-        } catch(error) {
-            throw error;
-        }
+    public async getById(userId: string): Promise<IUser> {
+        return await this.store.getByID(userId);
     };
 
-    public create(newUser: IUser): IUser {
-        try {
-            const user = this.store.create(newUser);
-
-            return user;
-        } catch(error) {
-            throw error;
-        }
+    public async create(newUser: IUser): Promise<IUser> {
+        return await this.store.create(newUser);
     };
 
-    public update(userData: UpdateArgs): IUser {
+    public async update(userData: UpdateArgs): Promise<IUser> {
         try {
-            const oldUser = this.store.getByID(userData.id);
+            const oldUser = await this.store.getByID(userData.id);
 
-            const updatedUser = this.store.update(new User({
+            return await this.store.update(new User({
                 id: userData.id,
                 username: userData.username || oldUser.username,
                 age: userData.age || oldUser.age,
                 hobbies: userData.hobbies || oldUser.hobbies,
             }));
-
-            return updatedUser;
         } catch(error) {
             throw error;
         }
     };
 
-    public delete(userId: string): void {
+    public async delete(userId: string): Promise<void> {
         try {
-            const user = this.store.getByID(userId);
-            this.store.remove(user);
-
+            const user = await this.store.getByID(userId);
+            
+            return await this.store.remove(user);
         } catch(error) {
             throw error;
         }

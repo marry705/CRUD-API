@@ -22,43 +22,55 @@ export class Store {
         this.users = [...newState];
     };
     
-    public getAll(): IUser[] { 
-        return this.users;
+    public async getAll(): Promise<IUser[]> { 
+        return await new Promise((resolve) => {
+            resolve(this.users);
+        });
     };
 
-    public getByID (id: string): IUser {
-        const userIndex = this.users.findIndex((user) => user.id === id);
+    public async getByID (id: string): Promise<IUser> {
+        return await new Promise((resolve) => {
+            const userIndex = this.users.findIndex((user) => user.id === id);
 
-        if (userIndex === -1) {
-            throw new Error(ErrorMessages.USER_NOT_FOUND);
-        }
-
-        return this.users[userIndex];
-    };
-
-    public create (user: IUser): IUser {
-        this.setState([...this.users, user]);
-
-        return user;
-    };
-
-    public update (updatedUser: IUser): IUser {
-        const newState = this.users.map((user) => {
-            if (user.id === updatedUser.id) {
-              user.update(updatedUser);
+            if (userIndex === -1) {
+                throw new Error(ErrorMessages.USER_NOT_FOUND);
             }
 
-            return user;
+            resolve(this.users[userIndex]);
         });
-
-        this.setState(newState);
-
-        return updatedUser;
     };
 
-    public remove (removedUser: IUser): void {
-        const newState = this.users.filter((user) => user.id !== removedUser.id);
+    public async create (user: IUser): Promise<IUser> {
+        return await new Promise((resolve) => {
+            this.setState([...this.users, user]);
 
-        this.setState(newState);
+            resolve(user);
+        });
+    };
+
+    public async update (updatedUser: IUser): Promise<IUser> {
+        return await new Promise((resolve) => {
+            const newState = this.users.map((user) => {
+                if (user.id === updatedUser.id) {
+                  user.update(updatedUser);
+                }
+    
+                return user;
+            });
+    
+            this.setState(newState);
+
+            resolve(updatedUser);
+        });
+    };
+
+    public async remove (removedUser: IUser): Promise<void> {
+        return await new Promise((resolve) => {
+            const newState = this.users.filter((user) => user.id !== removedUser.id);
+
+            this.setState(newState);
+            
+            resolve();
+        });
     };
 };
