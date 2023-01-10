@@ -1,5 +1,5 @@
 import { IUser } from '../entities';
-import { ErrorMessages } from '../services/serverResponse';
+import { ErrorMessages } from '../services';
 
 export class Store {
     private static instance: Store;

@@ -1,6 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { IUserController, UserController } from '../controller';
 import { ErrorHandler, ErrorMessages, RequestHeaders } from '../services';
+import { Request } from './request';
 
 export class Router {
     private readonly userController: IUserController;
@@ -11,8 +12,21 @@ export class Router {
         this.userController = new UserController();
     };
 
-    public requestHandler = (req: IncomingMessage, res: ServerResponse, body: string): void => {
+    private resolveBody = async (req: Request): Promise<string> => {
+        const bodyChunks: Uint8Array[] = [];
+    
+        for await (const chunk of req) {
+            bodyChunks.push(chunk);
+        }
+    
+        return Buffer.concat(bodyChunks).toString();
+    };
+
+    public requestHandler = async (req: Request, res: ServerResponse): Promise<void> => {
         try {
+            const rawBody = await this.resolveBody(req);
+            req.setBody(rawBody);
+
             const { url, method, headers } = req;
             
             if (!url?.match(this.baseUrlReg) && !url?.match(this.userIDReg)) {
@@ -26,22 +40,22 @@ export class Router {
             switch(method) {
                 case 'GET': {
                     if (url?.match(this.userIDReg)) {
-                        this.userController.getById(req, res);
+                        await this.userController.getById(req, res);
                     } else {
-                        this.userController.getAll(req, res);
+                        await this.userController.getAll(req, res);
                     }
                     break;
                 }
                 case 'PUT': {
-                    this.userController.put(req, res, body);
+                    await this.userController.put(req, res);
                     break;
                 }
                 case 'POST': {
-                    this.userController.post(req, res, body);
+                    await this.userController.post(req, res);
                     break;
                 }
                 case 'DELETE': {
-                    this.userController.delete(req, res);
+                    await this.userController.delete(req, res);
                     break;
                 }
                 default: {
@@ -51,17 +65,5 @@ export class Router {
         } catch (error) {
             ErrorHandler(error as Error, res);
         }
-    };
-
-    public requestListener = (req: IncomingMessage, res: ServerResponse): void => {
-        let body: string = '';
-
-        req.on('data', (chunk) => {
-            body += chunk.toString();
-        });
-
-        req.on('end', () => {
-            this.requestHandler(req, res, body);
-        });
     };
 };

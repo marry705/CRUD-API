@@ -1,14 +1,22 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { ServerResponse } from 'http';
 import { User } from '../entities';
-import { IUserService, UserService } from '../services';
-import { ErrorHandler, ErrorMessages, httpStatusCodes, ResponseHandler } from '../services/serverResponse';
+import { UpdateUserArgs } from '../entities/user';
+import { Request } from '../router';
+import {
+    IUserService,
+    UserService,
+    ErrorHandler,
+    ErrorMessages,
+    httpStatusCodes,
+    ResponseHandler
+} from '../services';
 
 export interface IUserController {
-    getAll: (req: IncomingMessage, res: ServerResponse) => void,
-    getById: (req: IncomingMessage, res: ServerResponse) => void,
-    delete: (req: IncomingMessage, res: ServerResponse) => void,
-    post: (req: IncomingMessage, res: ServerResponse, data: string) => void,
-    put: (req: IncomingMessage, res: ServerResponse, data: string) => void,
+    getAll: (req: Request, res: ServerResponse) => Promise<void>,
+    getById: (req: Request, res: ServerResponse) => Promise<void>,
+    delete: (req: Request, res: ServerResponse) => Promise<void>,
+    post: (req: Request, res: ServerResponse) => Promise<void>,
+    put: (req: Request, res: ServerResponse) => Promise<void>,
 };
 
 export class UserController implements IUserController {
@@ -18,9 +26,9 @@ export class UserController implements IUserController {
         this.userService = new UserService();
     };
 
-    public getAll(_: IncomingMessage, res: ServerResponse): void {
+    public async getAll(_: Request, res: ServerResponse): Promise<void> {
         try {
-            const users = this.userService.getAll();
+            const users = await this.userService.getAll();
 
             ResponseHandler(res, httpStatusCodes.OK, users);
         } catch(error) {
@@ -28,17 +36,17 @@ export class UserController implements IUserController {
         }
     };
 
-    public getById(req: IncomingMessage, res: ServerResponse): void {
+    public async getById(req: Request, res: ServerResponse): Promise<void> {
         try {
             const { url } = req;
 
-            const userId: string | undefined = url?.split('/').pop();
+            const userId: string | undefined = url?.split('/')[3];
 
             if (!this.userService.isIdValid(userId)) {
                 throw new Error(ErrorMessages.USER_NOT_VALID_ID);
             };
 
-            const user = this.userService.getById(userId!);
+            const user = await this.userService.getById(userId!);
 
             ResponseHandler(res, httpStatusCodes.OK, user);
         } catch(error) {
@@ -46,17 +54,17 @@ export class UserController implements IUserController {
         }
     };
 
-    public delete(req: IncomingMessage, res: ServerResponse): void {
+    public async delete(req: Request, res: ServerResponse): Promise<void> {
         try {
             const { url } = req;
 
-            const userId: string | undefined = url?.split('/').pop();
+            const userId: string | undefined = url?.split('/')[3];
 
             if (!this.userService.isIdValid(userId)) {
                 throw new Error(ErrorMessages.USER_NOT_VALID_ID);
             };
 
-            this.userService.delete(userId!);
+            await this.userService.delete(userId!);
 
             ResponseHandler(res, httpStatusCodes.OK, { message: 'User was removed.' });
         } catch(error) {
@@ -64,27 +72,23 @@ export class UserController implements IUserController {
         }
     };
 
-    public put(req: IncomingMessage, res: ServerResponse, data: string): void {
+    public async put(req: Request, res: ServerResponse): Promise<void> {
         try {
             const { url } = req;
 
-            const userId: string | undefined = url?.split('/').pop();
+            const userId: string | undefined = url?.split('/')[3];
 
             if (!this.userService.isIdValid(userId)) {
                 throw new Error(ErrorMessages.USER_NOT_VALID_ID);
             };
 
-            if (!data.length) {
-                throw new Error(ErrorMessages.USER_NOT_VALID_DATA);
-            };
-
-            const { username, age, hobbies } = JSON.parse(data!);
+            const { username, age, hobbies } = req.getJsonBody() as UpdateUserArgs;
 
             if (!this.userService.isValidData(username, age, hobbies)) {
                 throw new Error(ErrorMessages.USER_NOT_VALID_DATA);
             };
 
-            const user = this.userService.update({ id: userId!, username, age, hobbies });
+            const user = await this.userService.update({ id: userId!, username, age, hobbies });
 
             ResponseHandler(res, httpStatusCodes.OK, user);
         } catch(error) {
@@ -92,19 +96,15 @@ export class UserController implements IUserController {
         }
     };
 
-    public post(_: IncomingMessage, res: ServerResponse, data: string): void {
+    public async post(req: Request, res: ServerResponse): Promise<void> {
         try {
-            if (!data.length) {
-                throw new Error(ErrorMessages.USER_NOT_VALID_DATA);
-            };
-
-            const { username, age, hobbies } = JSON.parse(data!);
+            const { username, age, hobbies } = req.getJsonBody() as UpdateUserArgs;
 
             if (!this.userService.isValidData(username, age, hobbies)) {
                 throw new Error(ErrorMessages.USER_NOT_VALID_DATA);
             };
 
-            const user = this.userService.create(new User({ username, age, hobbies }));
+            const user = await this.userService.create(new User({ username, age, hobbies }));
 
             ResponseHandler(res, httpStatusCodes.OK, user);
         } catch(error) {
