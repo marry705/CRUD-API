@@ -1,18 +1,13 @@
-import { argv, env } from 'process';
+import { argv } from 'process';
 import * as dotenv from 'dotenv';
-import { createApp } from './server';
+import { runWithWorkers, runWithoutWorkers } from './server';
 
 dotenv.config();
 
 const isMultiNodeMode = !!argv.find((arg) => arg.startsWith('--multi-node'));
 
-const app = createApp();
-
 if (isMultiNodeMode) {
-    // runWithWorkers(app);
+    runWithWorkers();
   } else {
-    app.listen(
-        { port: env.MAIN_PORT || 3000 }, 
-        () => console.log(`🚀 Server ready in ${isMultiNodeMode ? 'multi-mode' : 'normal-mode'}`)
-    );
+    runWithoutWorkers();
 }

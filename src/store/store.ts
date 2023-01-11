@@ -50,15 +50,13 @@ export class Store {
 
     public async update (updatedUser: IUser): Promise<IUser> {
         return await new Promise((resolve) => {
-            const newState = this.users.map((user) => {
-                if (user.id === updatedUser.id) {
-                  user.update(updatedUser);
-                }
-    
-                return user;
-            });
-    
-            this.setState(newState);
+            const userIndex = this.users.findIndex((user) => user.id === updatedUser.id);
+
+            if (userIndex === -1) {
+                throw new Error(ErrorMessages.USER_NOT_FOUND);
+            }
+            
+            this.users[userIndex].update(updatedUser);
 
             resolve(updatedUser);
         });
@@ -66,9 +64,13 @@ export class Store {
 
     public async remove (removedUser: IUser): Promise<void> {
         return await new Promise((resolve) => {
-            const newState = this.users.filter((user) => user.id !== removedUser.id);
+            const userIndex = this.users.findIndex((user) => user.id === removedUser.id);
 
-            this.setState(newState);
+            if (userIndex === -1) {
+                throw new Error(ErrorMessages.USER_NOT_FOUND);
+            }
+
+            this.users.splice(userIndex, 1);
             
             resolve();
         });
