@@ -17,8 +17,12 @@ If everything goes well, then a `node_modules` folder should appear.
 
 5. `npm run start:dev`
 
-If everything goes well, then a message `🚀 Server ready` should appear in the console
+If everything goes well, then a message `🚀 Server ready on MAIN_PORT` should appear in the console
 
 6. `npm run start:prod`
 
-If everything goes well, then a `dist` folder should appear and message `🚀 Server ready` should appear in the console.
+If everything goes well, then a `dist` folder should appear and message `🚀 Server ready on MAIN_PORT` should appear in the console.
+
+7. `npm run start:multi`
+
+If everything goes well, then a message `🚀 Server ready on MAIN_PORT` and `Worker NUMBER_OF_WORKER is now connected to http://localhost:{WORKER_PORT}` should appear in the console. 
