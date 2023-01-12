@@ -5,12 +5,12 @@ export type StoreActions = 'getAll' | 'getByID' | 'create' | 'update' | 'remove'
 
 export class Store {
     private static instance: Store;
-    
+
     private users: IUser[] = [];
 
     private constructor() {
         this.users = [];
-    };
+    }
 
     public static getInstance(): Store {
         if (!Store.instance) { 
@@ -18,17 +18,17 @@ export class Store {
         }
 
         return Store.instance;
-    };
+    }
 
     private setState(newState: IUser[]): void {
         this.users = [...newState];
-    };
+    }
     
     public async getAll(): Promise<IUser[]> { 
         return await new Promise((resolve) => {
             resolve(this.users);
         });
-    };
+    }
 
     public async getByID (id: string): Promise<IUser> {
         return await new Promise((resolve, reject) => {
@@ -40,7 +40,7 @@ export class Store {
 
             resolve(this.users[userIndex]);
         });
-    };
+    }
 
     public async create (user: IUser): Promise<IUser> {
         return await new Promise((resolve) => {
@@ -48,7 +48,7 @@ export class Store {
 
             resolve(user);
         });
-    };
+    }
 
     public async update (updatedUser: IUser): Promise<IUser> {
         return await new Promise((resolve, reject) => {
@@ -62,7 +62,7 @@ export class Store {
 
             resolve(updatedUser);
         });
-    };
+    }
 
     public async remove (removedUser: IUser): Promise<void> {
         return await new Promise((resolve, reject) => {
@@ -76,5 +76,5 @@ export class Store {
             
             resolve();
         });
-    };
-};
+    }
+}

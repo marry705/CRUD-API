@@ -10,36 +10,34 @@ export interface IUserService {
     delete: (userId: string) => Promise<void>,
     isIdValid: (userId?: string) => boolean,
     isValidData: (username?: any, age?: any, hobbies?: any) => boolean,
-};
+}
 
 export class UserService implements IUserService {
     private readonly store: Store;
 
     constructor() {
         this.store = Store.getInstance();
-    };
+    }
 
     public isValidData (username?: any, age?: any, hobbies?: any): boolean {
-        return username && typeof username === 'string' &&
-            age && typeof age === 'number' &&
-            hobbies && Array.isArray(hobbies);
-    };
+        return (typeof username === 'string') && (typeof age === 'number') && Array.isArray(hobbies);
+    }
 
     public isIdValid (userId?: string): boolean {
         return !userId ? false : validate(userId);
-    };
+    }
 
     public async getAll(): Promise<IUser[]> {
         return await this.store.getAll();
-    };
+    }
 
     public async getById(userId: string): Promise<IUser> {
         return await this.store.getByID(userId);
-    };
+    }
 
     public async create(newUser: IUser): Promise<IUser> {
         return await this.store.create(newUser);
-    };
+    }
 
     public async update(userData: UpdateArgs): Promise<IUser> {
         try {
@@ -54,7 +52,7 @@ export class UserService implements IUserService {
         } catch(error) {
             throw error;
         }
-    };
+    }
 
     public async delete(userId: string): Promise<void> {
         try {
@@ -64,5 +62,5 @@ export class UserService implements IUserService {
         } catch(error) {
             throw error;
         }
-    };
+    }
 }

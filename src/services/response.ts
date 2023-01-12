@@ -7,7 +7,7 @@ export enum httpStatusCodes {
     BAD_REQUEST = 400,
     NOT_FOUND = 404,
     INTERNAL_SERVER_ERROR = 500,
-};
+}
 
 export const ErrorMessages = {
     USER_NOT_FOUND: 'There is no user with this id.',
@@ -44,7 +44,7 @@ export const ErrorHandler = (error: Error, res: ServerResponse): void => {
     }
 };
 
-export const ResponseHandler = (res: ServerResponse, statusCodes: httpStatusCodes, data: Object): void => {
+export const ResponseHandler = (res: ServerResponse, statusCodes: httpStatusCodes, data: string): void => {
     res.writeHead(statusCodes, RequestHeaders);
-    res.end(JSON.stringify(data));
+    res.end(data);
 };

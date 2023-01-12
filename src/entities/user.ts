@@ -6,7 +6,7 @@ export interface IUser {
     readonly age: number,
     readonly hobbies: string[],
     update: (args: UpdateUserArgs) => void,
-};
+}
 
 export type UpdateUserArgs = {
     readonly username: string; 
@@ -24,8 +24,11 @@ export type UpdateArgs = Partial<Pick<UpdateUserArgs, 'age' | 'hobbies' | 'usern
 
 export class User implements IUser{
     id: string;
+
     username: string;
+
     age: number;
+
     hobbies: string[];
 
     constructor (args: CreateArgs) {
@@ -34,11 +37,11 @@ export class User implements IUser{
         this.username = username;
         this.age = age;
         this.hobbies = [...hobbies];
-    };
+    }
 
     update ({ username, age, hobbies }: UpdateUserArgs): void {
         this.username = username;
         this.age = age;
         this.hobbies = [...hobbies];
-    };
+    }
 }

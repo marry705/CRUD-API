@@ -1,16 +1,18 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { ServerResponse } from 'http';
 import { IUserController, UserController } from '../controller';
 import { ErrorHandler, ErrorMessages, RequestHeaders } from '../services';
 import { Request } from './request';
 
 export class Router {
     private readonly userController: IUserController;
+
     private readonly userIDReg = /^\/api\/users\/[a-z0-9\-]+\/?$/;
+
     private readonly baseUrlReg = /^\/api\/users\/?$/;
     
     constructor() {
         this.userController = new UserController();
-    };
+    }
 
     private resolveBody = async (req: Request): Promise<string> => {
         const bodyChunks: Uint8Array[] = [];
@@ -31,11 +33,11 @@ export class Router {
             
             if (!url?.match(this.baseUrlReg) && !url?.match(this.userIDReg)) {
                 throw new Error(ErrorMessages.NOT_VALID_URL);
-            };
+            }
 
             if (!(headers['content-type'] === RequestHeaders['content-Type'])) {
                 throw new Error(ErrorMessages.NOT_VALID_HEADERS);
-            };
+            }
 
             switch(method) {
                 case 'GET': {
@@ -66,4 +68,4 @@ export class Router {
             ErrorHandler(error as Error, res);
         }
     };
-};
+}

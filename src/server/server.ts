@@ -9,8 +9,11 @@ type requestListenerHandler = (req: Request, res: ServerResponse) => void;
 
 export class Server {
     private readonly router: Router;
+
     private readonly cpusCount: number;
+
     private readonly store: Store;
+
     private nextPortIteration: number;
 
     constructor() {
@@ -18,7 +21,7 @@ export class Server {
         this.cpusCount = cpus().length;
         this.nextPortIteration = 0;
         this.store = Store.getInstance();
-    };
+    }
 
     private getNextPort = (port: number): number => {
         if (this.nextPortIteration === this.cpusCount) {
@@ -71,7 +74,7 @@ export class Server {
         };
     };  
 
-    private startServer = (port: number = 3000, callback: requestListenerHandler, message?: string): void => {
+    private startServer = (port = 3000, callback: requestListenerHandler, message?: string): void => {
         const app = createServer(
             { IncomingMessage: Request },
             callback
@@ -83,7 +86,7 @@ export class Server {
         );
     };
 
-    public startServerWithoutWorkers = (port: number = 3000): void => {
+    public startServerWithoutWorkers = (port = 3000): void => {
         this.startServer(
             port,
             this.router.requestHandler,
@@ -91,7 +94,7 @@ export class Server {
         );
     };
 
-    public startServerWithWorkers = (port: number = 3000): void => {
+    public startServerWithWorkers = (port = 3000): void => {
         if (isMaster) {  
             for (let index = 0; index < this.cpusCount; index += 1) {
                 cluster.fork();
@@ -113,4 +116,4 @@ export class Server {
             );
         }
     };
-};
+}

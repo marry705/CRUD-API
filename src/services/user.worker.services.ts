@@ -24,35 +24,33 @@ export class UserWorkerService implements IUserService {
                 resolve(message.data);
             });
         });
-    };
+    }
 
     public isValidData (username?: any, age?: any, hobbies?: any): boolean {
-        return username && typeof username === 'string' &&
-            age && typeof age === 'number' &&
-            hobbies && Array.isArray(hobbies);
-    };
+        return typeof username === 'string' && typeof age === 'number' && Array.isArray(hobbies);
+    }
 
     public isIdValid (userId?: string): boolean {
         return !userId ? false : validate(userId);
-    };
+    }
 
     public async getAll(): Promise<IUser[]> {
         return await this.sendCommandToMasterProcess('getAll');
-    };
+    }
 
     public async getById(userId: string): Promise<IUser> {
         return await this.sendCommandToMasterProcess('getByID', [userId]);
-    };
+    }
 
     public async create(user: IUser): Promise<IUser> {
         return await this.sendCommandToMasterProcess('create', [user]);
-    };
+    }
 
     public async update(userForUpdate: UpdateArgs): Promise<IUser> {
         return await this.sendCommandToMasterProcess('update', [userForUpdate]);
-    };
+    }
 
     public async delete(userId: string): Promise<void> {
         await this.sendCommandToMasterProcess('remove', [userId]);
-    };
+    }
 }

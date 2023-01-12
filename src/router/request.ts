@@ -6,11 +6,11 @@ export class Request extends IncomingMessage {
 
     public getBody(): string | undefined {
         return this.body;
-    };
+    }
 
     public setBody(body: string | undefined): void {
         this.body = body;
-    };
+    }
 
     public getJsonBody(): Object {
         if (!this.body?.length) {
@@ -18,5 +18,5 @@ export class Request extends IncomingMessage {
         }
         
         return JSON.parse(this.body);
-    };
+    }
 }
