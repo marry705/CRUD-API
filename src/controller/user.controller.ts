@@ -1,3 +1,4 @@
+import { isWorker } from 'cluster';
 import { ServerResponse } from 'http';
 import { User } from '../entities';
 import { UpdateUserArgs } from '../entities/user';
@@ -8,7 +9,8 @@ import {
     ErrorHandler,
     ErrorMessages,
     httpStatusCodes,
-    ResponseHandler
+    ResponseHandler,
+    UserWorkerService
 } from '../services';
 
 export interface IUserController {
@@ -23,7 +25,7 @@ export class UserController implements IUserController {
     private readonly userService: IUserService;
     
     constructor() {
-        this.userService = new UserService();
+        this.userService = isWorker ? new UserWorkerService() : new UserService();
     };
 
     public async getAll(_: Request, res: ServerResponse): Promise<void> {

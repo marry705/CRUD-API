@@ -1,9 +1,11 @@
 import { IUser } from '../entities';
 import { ErrorMessages } from '../services';
 
+export type StoreActions = 'getAll' | 'getByID' | 'create' | 'update' | 'remove';
+
 export class Store {
     private static instance: Store;
-
+    
     private users: IUser[] = [];
 
     private constructor() {
@@ -11,7 +13,7 @@ export class Store {
     };
 
     public static getInstance(): Store {
-        if (!Store.instance) {
+        if (!Store.instance) { 
             Store.instance = new Store();
         }
 
@@ -29,11 +31,11 @@ export class Store {
     };
 
     public async getByID (id: string): Promise<IUser> {
-        return await new Promise((resolve) => {
+        return await new Promise((resolve, reject) => {
             const userIndex = this.users.findIndex((user) => user.id === id);
 
             if (userIndex === -1) {
-                throw new Error(ErrorMessages.USER_NOT_FOUND);
+                reject(new Error(ErrorMessages.USER_NOT_FOUND));
             }
 
             resolve(this.users[userIndex]);
@@ -49,11 +51,11 @@ export class Store {
     };
 
     public async update (updatedUser: IUser): Promise<IUser> {
-        return await new Promise((resolve) => {
+        return await new Promise((resolve, reject) => {
             const userIndex = this.users.findIndex((user) => user.id === updatedUser.id);
 
             if (userIndex === -1) {
-                throw new Error(ErrorMessages.USER_NOT_FOUND);
+                reject(new Error(ErrorMessages.USER_NOT_FOUND));
             }
             
             this.users[userIndex].update(updatedUser);
@@ -63,11 +65,11 @@ export class Store {
     };
 
     public async remove (removedUser: IUser): Promise<void> {
-        return await new Promise((resolve) => {
+        return await new Promise((resolve, reject) => {
             const userIndex = this.users.findIndex((user) => user.id === removedUser.id);
 
             if (userIndex === -1) {
-                throw new Error(ErrorMessages.USER_NOT_FOUND);
+                reject(new Error(ErrorMessages.USER_NOT_FOUND));
             }
 
             this.users.splice(userIndex, 1);

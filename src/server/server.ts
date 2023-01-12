@@ -1,21 +1,23 @@
 import cluster, { isMaster, isWorker } from 'cluster';
 import { createServer, request, ServerResponse } from 'http';
 import { cpus } from 'os';
-import { parse } from 'url';
 import { Router, Request } from '../router';
-import { ErrorMessages } from '../services';
+import { ErrorHandler, ErrorMessages } from '../services';
+import { Store, StoreActions } from '../store';
 
 type requestListenerHandler = (req: Request, res: ServerResponse) => void;
 
 export class Server {
     private readonly router: Router;
     private readonly cpusCount: number;
+    private readonly store: Store;
     private nextPortIteration: number;
 
     constructor() {
         this.router = new Router();
         this.cpusCount = cpus().length;
         this.nextPortIteration = 0;
+        this.store = Store.getInstance();
     };
 
     private getNextPort = (port: number): number => {
@@ -26,6 +28,23 @@ export class Server {
         }
     
         return port + this.nextPortIteration;
+    };
+
+    private createStoreCommunicationWithWorkers = (): void => {
+        for (const id in cluster.workers) {
+            cluster.workers[id]?.on('message', async (message) => {
+                if (typeof this.store[(message.method as StoreActions)] === 'function') {
+                    try {
+                        const result = await (this.store[message.method as StoreActions] as Function)(...message.parameters);
+                        cluster.workers[id]?.send({ method: message.method, data: result });
+                    } catch (error) {
+                        cluster.workers[id]?.send({ method: message.method, error: (error as Error).message });
+                    }
+                } else {
+                    cluster.workers[id]?.send({});
+                }
+            });
+        }
     };
 
     private balancerRequestHandler = (port: number): requestListenerHandler => {
@@ -39,12 +58,14 @@ export class Server {
             const urlPath = new URL(`http://localhost:${nextPort}${mainRequest.url}`).href;
 
             const requestForWorker = request(urlPath, {
-                    headers: mainRequest.headers,
-                    method: mainRequest.method,
-                }, (wResponse) => {
-                    mainResponse.writeHead(wResponse.statusCode || 200, wResponse.headers);
-                    wResponse.pipe(mainResponse);
-                });
+                        headers: mainRequest.headers,
+                        method: mainRequest.method,
+                    }, (workerResponse) => {
+                        mainResponse.writeHead(workerResponse.statusCode || 200, workerResponse.headers);
+                        workerResponse.pipe(mainResponse);
+                    }).on('error', (error) => {
+                        ErrorHandler(error as Error, mainResponse);
+                    });
 
             mainRequest.pipe(requestForWorker);
         };
@@ -75,15 +96,9 @@ export class Server {
             for (let index = 0; index < this.cpusCount; index += 1) {
                 cluster.fork();
             }
-
-            cluster.on('exit', (worker) => {
-                console.log(`worker ${worker.id} died`);
-            });
-            
-            cluster.on('message', (worker, message) => {
-                console.log('MESSAGE', message);
-            });
     
+            this.createStoreCommunicationWithWorkers();
+
             this.startServer(
                 port,
                 this.balancerRequestHandler(port),
