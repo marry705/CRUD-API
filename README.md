@@ -26,3 +26,5 @@ If everything goes well, then a `dist` folder should appear and message `🚀 Se
 7. `npm run start:multi`
 
 If everything goes well, then a message `🚀 Server ready on MAIN_PORT` and `Worker NUMBER_OF_WORKER is now connected to http://localhost:{WORKER_PORT}` should appear in the console. 
+
+8. `npm run test`

@@ -1,26 +1,5 @@
 import { v4 } from 'uuid';
-
-export interface IUser {
-    readonly id: string,
-    readonly username: string,
-    readonly age: number,
-    readonly hobbies: string[],
-    update: (args: UpdateUserArgs) => void,
-}
-
-export type UpdateUserArgs = {
-    readonly username: string; 
-    readonly age: number; 
-    readonly hobbies: string[];
-};
-
-type CreateArgs = UpdateUserArgs & {
-    readonly id?: string;
-};
-
-export type UpdateArgs = Partial<Pick<UpdateUserArgs, 'age' | 'hobbies' | 'username'>> & {
-    readonly id: string;
-};
+import { CreateArgs, IUser, UpdateUserArgs } from './types';
 
 export class User implements IUser{
     id: string;

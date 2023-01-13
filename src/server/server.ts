@@ -1,11 +1,11 @@
 import cluster, { isMaster, isWorker } from 'cluster';
 import { createServer, request, ServerResponse } from 'http';
 import { cpus } from 'os';
-import { Router, Request } from '../router';
-import { ErrorHandler, ErrorMessages } from '../services';
+import { Router } from '../router';
+import { ErrorHandler, ErrorMessages } from '../responses';
+import { Request } from '../requests';
 import { Store, StoreActions } from '../store';
-
-type requestListenerHandler = (req: Request, res: ServerResponse) => void;
+import { RequestListenerHandler } from './types';
 
 export class Server {
     private readonly router: Router;
@@ -50,7 +50,7 @@ export class Server {
         }
     };
 
-    private balancerRequestHandler = (port: number): requestListenerHandler => {
+    private balancerRequestHandler = (port: number): RequestListenerHandler => {
         return (mainRequest: Request, mainResponse: ServerResponse) => {
             const nextPort = this.getNextPort(port);
 
@@ -74,7 +74,7 @@ export class Server {
         };
     };  
 
-    private startServer = (port = 3000, callback: requestListenerHandler, message?: string): void => {
+    private startServer = (port = 3000, callback: RequestListenerHandler, message?: string): void => {
         const app = createServer(
             { IncomingMessage: Request },
             callback

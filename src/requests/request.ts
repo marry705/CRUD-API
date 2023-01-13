@@ -1,5 +1,5 @@
 import { IncomingMessage } from 'http';
-import { ErrorMessages } from '../services';
+import { ErrorMessages } from '../responses';
 
 export class Request extends IncomingMessage {
     private body: string | undefined;

@@ -1,17 +1,10 @@
 import { isWorker } from 'cluster';
 import { ServerResponse } from 'http';
 import { User } from '../entities';
-import { UpdateUserArgs } from '../entities/user';
-import { Request } from '../router';
-import {
-    IUserService,
-    UserService,
-    ErrorHandler,
-    ErrorMessages,
-    httpStatusCodes,
-    ResponseHandler,
-    UserWorkerService
-} from '../services';
+import { ErrorHandler, ErrorMessages, httpStatusCodes, ResponseHandler } from '../responses';
+import { IUserService, UserService, UserWorkerService } from '../services';
+import { Request } from '../requests';
+import { UpdateUserArgs } from '../entities/types';
 
 export interface IUserController {
     getAll: (req: Request, res: ServerResponse) => Promise<void>,
@@ -34,7 +27,7 @@ export class UserController implements IUserController {
 
             ResponseHandler(res, httpStatusCodes.OK, JSON.stringify(users));
         } catch(error) {
-            throw error;
+            ErrorHandler(error as Error, res);
         }
     }
 

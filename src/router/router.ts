@@ -1,7 +1,7 @@
 import { ServerResponse } from 'http';
 import { IUserController, UserController } from '../controller';
-import { ErrorHandler, ErrorMessages, RequestHeaders } from '../services';
-import { Request } from './request';
+import { Request } from '../requests';
+import { ErrorHandler, ErrorMessages, RequestHeaders } from '../responses';
 
 export class Router {
     private readonly userController: IUserController;

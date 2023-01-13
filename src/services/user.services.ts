@@ -1,16 +1,7 @@
 import { IUser, UpdateArgs, User } from '../entities';
 import { Store } from '../store';
 import { validate } from 'uuid';
-
-export interface IUserService {
-    getAll: () => Promise<IUser[]>,
-    getById: (userId: string) => Promise<IUser>,
-    create: (user: IUser) => Promise<IUser>,
-    update: (userForUpdate: UpdateArgs) => Promise<IUser>,
-    delete: (userId: string) => Promise<void>,
-    isIdValid: (userId?: string) => boolean,
-    isValidData: (username?: any, age?: any, hobbies?: any) => boolean,
-}
+import { IUserService } from './types';
 
 export class UserService implements IUserService {
     private readonly store: Store;

@@ -1,18 +1,17 @@
 import process from 'process';
 import cluster from 'cluster';
-import { IUserService } from './user.services';
+import { IUserService, WorkerParam } from './types';
 import { IUser, UpdateArgs } from '../entities';
 import { validate } from 'uuid';
-import { ErrorMessages } from './response';
+import { ErrorMessages } from '../responses';
 import { StoreActions } from '../store';
 
 export class UserWorkerService implements IUserService {
-    private async sendCommandToMasterProcess(method: StoreActions, parameters: any[] = []): Promise<any> {
+    private async sendCommandToMasterProcess(method: StoreActions, parameters: WorkerParam[] = []): Promise<any> {
         return await new Promise((resolve, reject) => {
             process.send!({ method, parameters });
 
             cluster.worker!.once('message', (message) => {
-                
                 if (message.method != method) {
                     reject(new Error(ErrorMessages.SERVER_ERROR));
                 }

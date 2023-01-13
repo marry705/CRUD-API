@@ -1,3 +1,3 @@
 export { Store } from './store';
 
-export { StoreActions } from './store';
+export { StoreActions } from './types';

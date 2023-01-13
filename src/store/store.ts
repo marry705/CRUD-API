@@ -1,7 +1,5 @@
 import { IUser } from '../entities';
-import { ErrorMessages } from '../services';
-
-export type StoreActions = 'getAll' | 'getByID' | 'create' | 'update' | 'remove';
+import { ErrorMessages } from '../responses';
 
 export class Store {
     private static instance: Store;
@@ -38,6 +36,8 @@ export class Store {
                 reject(new Error(ErrorMessages.USER_NOT_FOUND));
             }
 
+            console.log(this.users);
+
             resolve(this.users[userIndex]);
         });
     }
@@ -73,6 +73,10 @@ export class Store {
             }
 
             this.users.splice(userIndex, 1);
+
+            this.setState(this.users);
+
+            console.log(this.users);
             
             resolve();
         });
