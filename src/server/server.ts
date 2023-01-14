@@ -39,9 +39,17 @@ export class Server {
                 if (typeof this.store[(message.method as StoreActions)] === 'function') {
                     try {
                         const result = await (this.store[message.method as StoreActions] as Function)(...message.parameters);
-                        cluster.workers[id]?.send({ method: message.method, data: result });
+                        console.log(result)
+                        cluster.workers[id]?.send({
+                            method: message.method,
+                            data: result
+                        });
                     } catch (error) {
-                        cluster.workers[id]?.send({ method: message.method, error: (error as Error).message });
+                        console.log(error);
+                        cluster.workers[id]?.send({
+                            method: message.method,
+                            error: typeof error
+                        });
                     }
                 } else {
                     cluster.workers[id]?.send({});

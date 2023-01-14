@@ -34,9 +34,9 @@ export class Store {
 
             if (userIndex === -1) {
                 reject(new Error(ErrorMessages.USER_NOT_FOUND));
+            } else {
+                resolve(this.users[userIndex]);
             }
-
-            resolve(this.users[userIndex]);
         });
     }
 
@@ -54,11 +54,11 @@ export class Store {
 
             if (userIndex === -1) {
                 reject(new Error(ErrorMessages.USER_NOT_FOUND));
+            } else {
+                this.users[userIndex].update(updatedUser);
+
+                resolve(updatedUser);
             }
-
-            this.users[userIndex].update(updatedUser);
-
-            resolve(updatedUser);
         });
     }
 
@@ -68,11 +68,11 @@ export class Store {
 
             if (userIndex === -1) {
                 reject(new Error(ErrorMessages.USER_NOT_FOUND));
-            }
+            } else {
+                this.users.splice(userIndex, 1);
 
-            this.users.splice(userIndex, 1);
-            
-            resolve();
+                resolve();
+            }
         });
     }
 }

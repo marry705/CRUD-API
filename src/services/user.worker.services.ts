@@ -14,13 +14,11 @@ export class UserWorkerService implements IUserService {
             cluster.worker!.once('message', (message) => {
                 if (message.method != method) {
                     reject(new Error(ErrorMessages.SERVER_ERROR));
-                }
-
-                if (message.error) {
+                } else if (message.error) {
                     reject(new Error(message.error));
-                }
-
-                resolve(message.data);
+                } else {
+                    resolve(message.data);
+                } 
             });
         });
     }
