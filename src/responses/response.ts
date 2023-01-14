@@ -44,7 +44,7 @@ export const ErrorHandler = (error: Error, res: ServerResponse): void => {
     }
 };
 
-export const ResponseHandler = (res: ServerResponse, statusCodes: httpStatusCodes, data: string): void => {
+export const ResponseHandler = (res: ServerResponse, statusCodes: httpStatusCodes, data: any): void => {
     res.writeHead(statusCodes, RequestHeaders);
-    res.end(data);
+    res.end(JSON.stringify(data));
 };

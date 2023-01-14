@@ -1,3 +1,3 @@
-export { IUser, UpdateArgs } from './types';
+export { IUser, UpdateArgs, UpdateUserArgs } from './types';
 
 export { User } from './user';

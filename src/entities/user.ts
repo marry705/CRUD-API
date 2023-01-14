@@ -18,7 +18,7 @@ export class User implements IUser{
         this.hobbies = [...hobbies];
     }
 
-    update ({ username, age, hobbies }: UpdateUserArgs): void {
+    public update = ({ username, age, hobbies }: UpdateUserArgs): void => {
         this.username = username;
         this.age = age;
         this.hobbies = [...hobbies];

@@ -33,7 +33,7 @@
         "build": "tsc",
         "start:dev": "nodemon",
         "start:multi": "nodemon -- --multi-node",
-        "start:prod": "tsc && nodemon ./dist/index.js"
+        "start:prod": "tsc && ts-node-esm --experimental-specifier-resolution=node ./dist/index.js"
     },
     "jest": {
         "roots": [

@@ -1,31 +1,22 @@
-import { isWorker } from 'cluster';
 import { ServerResponse } from 'http';
-import { User } from '../entities';
+import { User, UpdateUserArgs } from '../entities';
 import { ErrorHandler, ErrorMessages, httpStatusCodes, ResponseHandler } from '../responses';
-import { IUserService, UserService, UserWorkerService } from '../services';
+import { IUserService, Service } from '../services';
 import { Request } from '../requests';
-import { UpdateUserArgs } from '../entities/types';
-
-export interface IUserController {
-    getAll: (req: Request, res: ServerResponse) => Promise<void>,
-    getById: (req: Request, res: ServerResponse) => Promise<void>,
-    delete: (req: Request, res: ServerResponse) => Promise<void>,
-    post: (req: Request, res: ServerResponse) => Promise<void>,
-    put: (req: Request, res: ServerResponse) => Promise<void>,
-}
+import { IUserController } from './types';
 
 export class UserController implements IUserController {
-    private readonly userService: IUserService;
+    private readonly service: IUserService;
     
     constructor() {
-        this.userService = isWorker ? new UserWorkerService() : new UserService();
+        this.service = Service.getInstance();
     }
 
     public async getAll(_: Request, res: ServerResponse): Promise<void> {
         try {
-            const users = await this.userService.getAll();
+            const users = await this.service.getAll();
 
-            ResponseHandler(res, httpStatusCodes.OK, JSON.stringify(users));
+            ResponseHandler(res, httpStatusCodes.OK, users);
         } catch(error) {
             ErrorHandler(error as Error, res);
         }
@@ -37,13 +28,13 @@ export class UserController implements IUserController {
 
             const userId: string | undefined = url?.split('/')[3];
 
-            if (!this.userService.isIdValid(userId)) {
+            if (!this.service.isIdValid(userId)) {
                 throw new Error(ErrorMessages.USER_NOT_VALID_ID);
             }
 
-            const user = await this.userService.getById(userId!);
+            const user = await this.service.getById(userId!);
 
-            ResponseHandler(res, httpStatusCodes.OK, JSON.stringify(user));
+            ResponseHandler(res, httpStatusCodes.OK, user);
         } catch(error) {
             ErrorHandler(error as Error, res);
         }
@@ -55,13 +46,13 @@ export class UserController implements IUserController {
 
             const userId: string | undefined = url?.split('/')[3];
 
-            if (!this.userService.isIdValid(userId)) {
+            if (!this.service.isIdValid(userId)) {
                 throw new Error(ErrorMessages.USER_NOT_VALID_ID);
             }
 
-            await this.userService.delete(userId!);
+            await this.service.delete(userId!);
 
-            ResponseHandler(res, httpStatusCodes.OK, JSON.stringify({ message: 'User was removed.' }));
+            ResponseHandler(res, httpStatusCodes.NO_CONTENT, { message: 'User was removed.' });
         } catch(error) {
             ErrorHandler(error as Error, res);
         }
@@ -73,19 +64,15 @@ export class UserController implements IUserController {
 
             const userId: string | undefined = url?.split('/')[3];
 
-            if (!this.userService.isIdValid(userId)) {
+            if (!this.service.isIdValid(userId)) {
                 throw new Error(ErrorMessages.USER_NOT_VALID_ID);
             }
 
             const { username, age, hobbies } = req.getJsonBody() as UpdateUserArgs;
 
-            if (!this.userService.isValidData(username, age, hobbies)) {
-                throw new Error(ErrorMessages.USER_NOT_VALID_DATA);
-            }
+            const user = await this.service.update({ id: userId!, username, age, hobbies });
 
-            const user = await this.userService.update({ id: userId!, username, age, hobbies });
-
-            ResponseHandler(res, httpStatusCodes.OK, JSON.stringify(user));
+            ResponseHandler(res, httpStatusCodes.OK, user);
         } catch(error) {
             ErrorHandler(error as Error, res);
         }
@@ -95,13 +82,13 @@ export class UserController implements IUserController {
         try {
             const { username, age, hobbies } = req.getJsonBody() as UpdateUserArgs;
 
-            if (!this.userService.isValidData(username, age, hobbies)) {
+            if (!this.service.isValidData(username, age, hobbies)) {
                 throw new Error(ErrorMessages.USER_NOT_VALID_DATA);
             }
 
-            const user = await this.userService.create(new User({ username, age, hobbies }));
+            const user = await this.service.create(new User({ username, age, hobbies }));
 
-            ResponseHandler(res, httpStatusCodes.OK, JSON.stringify(user));
+            ResponseHandler(res, httpStatusCodes.CREATED, user);
         } catch(error) {
             ErrorHandler(error as Error, res);
         }

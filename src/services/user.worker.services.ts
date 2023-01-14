@@ -1,7 +1,7 @@
 import process from 'process';
 import cluster from 'cluster';
 import { IUserService, WorkerParam } from './types';
-import { IUser, UpdateArgs } from '../entities';
+import { IUser, UpdateArgs, User } from '../entities';
 import { validate } from 'uuid';
 import { ErrorMessages } from '../responses';
 import { StoreActions } from '../store';
@@ -25,11 +25,11 @@ export class UserWorkerService implements IUserService {
         });
     }
 
-    public isValidData (username?: any, age?: any, hobbies?: any): boolean {
+    public isValidData(username?: any, age?: any, hobbies?: any): boolean {
         return typeof username === 'string' && typeof age === 'number' && Array.isArray(hobbies);
     }
 
-    public isIdValid (userId?: string): boolean {
+    public isIdValid(userId?: string): boolean {
         return !userId ? false : validate(userId);
     }
 
@@ -41,15 +41,22 @@ export class UserWorkerService implements IUserService {
         return await this.sendCommandToMasterProcess('getByID', [userId]);
     }
 
+    public async delete(userId: string): Promise<void> {
+        await this.sendCommandToMasterProcess('remove', [userId]);
+    }
+
     public async create(user: IUser): Promise<IUser> {
         return await this.sendCommandToMasterProcess('create', [user]);
     }
 
     public async update(userForUpdate: UpdateArgs): Promise<IUser> {
-        return await this.sendCommandToMasterProcess('update', [userForUpdate]);
-    }
+        const oldUser = await this.sendCommandToMasterProcess('getByID', [userForUpdate.id]);
 
-    public async delete(userId: string): Promise<void> {
-        await this.sendCommandToMasterProcess('remove', [userId]);
+        return await this.sendCommandToMasterProcess('update', [new User({
+            id: userForUpdate.id,
+            username: userForUpdate.username || oldUser.username,
+            age: userForUpdate.age || oldUser.age,
+            hobbies: userForUpdate.hobbies || oldUser.hobbies,
+        })]);
     }
 }

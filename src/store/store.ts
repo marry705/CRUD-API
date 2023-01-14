@@ -1,10 +1,10 @@
-import { IUser } from '../entities';
+import { IUser, User } from '../entities';
 import { ErrorMessages } from '../responses';
 
 export class Store {
     private static instance: Store;
 
-    private users: IUser[] = [];
+    private users: IUser[];
 
     private constructor() {
         this.users = [];
@@ -28,7 +28,7 @@ export class Store {
         });
     }
 
-    public async getByID (id: string): Promise<IUser> {
+    public async getByID(id: string): Promise<IUser> {
         return await new Promise((resolve, reject) => {
             const userIndex = this.users.findIndex((user) => user.id === id);
 
@@ -36,47 +36,41 @@ export class Store {
                 reject(new Error(ErrorMessages.USER_NOT_FOUND));
             }
 
-            console.log(this.users);
-
             resolve(this.users[userIndex]);
         });
     }
 
-    public async create (user: IUser): Promise<IUser> {
+    public async create(user: IUser): Promise<IUser> {
         return await new Promise((resolve) => {
-            this.setState([...this.users, user]);
+            this.setState([...this.users, new User(user)]);
 
             resolve(user);
         });
     }
 
-    public async update (updatedUser: IUser): Promise<IUser> {
-        return await new Promise((resolve, reject) => {
+    public async update(updatedUser: IUser): Promise<IUser> {
+        return await new Promise(async (resolve, reject) => {
             const userIndex = this.users.findIndex((user) => user.id === updatedUser.id);
 
             if (userIndex === -1) {
                 reject(new Error(ErrorMessages.USER_NOT_FOUND));
             }
-            
+
             this.users[userIndex].update(updatedUser);
 
             resolve(updatedUser);
         });
     }
 
-    public async remove (removedUser: IUser): Promise<void> {
+    public async remove(id: string): Promise<void> {
         return await new Promise((resolve, reject) => {
-            const userIndex = this.users.findIndex((user) => user.id === removedUser.id);
+            const userIndex = this.users.findIndex((user) => user.id === id);
 
             if (userIndex === -1) {
                 reject(new Error(ErrorMessages.USER_NOT_FOUND));
             }
 
             this.users.splice(userIndex, 1);
-
-            this.setState(this.users);
-
-            console.log(this.users);
             
             resolve();
         });

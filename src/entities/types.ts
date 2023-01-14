@@ -8,7 +8,7 @@ export interface IUser {
 
 export type UpdateUserArgs = {
     readonly username: string; 
-    readonly age: number; 
+    readonly age: number;
     readonly hobbies: string[];
 };
 

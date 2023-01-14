@@ -10,11 +10,11 @@ export class UserService implements IUserService {
         this.store = Store.getInstance();
     }
 
-    public isValidData (username?: any, age?: any, hobbies?: any): boolean {
+    public isValidData(username?: any, age?: any, hobbies?: any): boolean {
         return (typeof username === 'string') && (typeof age === 'number') && Array.isArray(hobbies);
     }
 
-    public isIdValid (userId?: string): boolean {
+    public isIdValid(userId?: string): boolean {
         return !userId ? false : validate(userId);
     }
 
@@ -31,27 +31,19 @@ export class UserService implements IUserService {
     }
 
     public async update(userData: UpdateArgs): Promise<IUser> {
-        try {
-            const oldUser = await this.store.getByID(userData.id);
+        const oldUser = await this.store.getByID(userData.id);
 
-            return await this.store.update(new User({
-                id: userData.id,
-                username: userData.username || oldUser.username,
-                age: userData.age || oldUser.age,
-                hobbies: userData.hobbies || oldUser.hobbies,
-            }));
-        } catch(error) {
-            throw error;
-        }
+        return await this.store.update(new User({
+            id: userData.id,
+            username: userData.username || oldUser.username,
+            age: userData.age || oldUser.age,
+            hobbies: userData.hobbies || oldUser.hobbies,
+        }));
     }
 
     public async delete(userId: string): Promise<void> {
-        try {
-            const user = await this.store.getByID(userId);
+        await this.store.getByID(userId);
             
-            return await this.store.remove(user);
-        } catch(error) {
-            throw error;
-        }
+        return await this.store.remove(userId);
     }
 }
