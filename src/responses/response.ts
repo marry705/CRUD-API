@@ -1,4 +1,7 @@
 import { ServerResponse } from 'http';
+import { BadRequestError } from './badRequestError';
+import { ServerError } from './serverError';
+import { NotFoundError } from './notFoundError';
 
 export enum httpStatusCodes {
     OK = 200,
@@ -23,25 +26,27 @@ export const RequestHeaders = {
 };
 
 export const ErrorHandler = (error: Error, res: ServerResponse): void => {
-    if (error.message === ErrorMessages.NOT_VALID_URL) {
+    if (error instanceof NotFoundError || error.name === 'NotFoundError') {
         res.writeHead(httpStatusCodes.NOT_FOUND, RequestHeaders);
         res.end(JSON.stringify({ message: error.message }));
-    } else if (error.message === ErrorMessages.USER_NOT_FOUND) {
-        res.writeHead(httpStatusCodes.NOT_FOUND, RequestHeaders);
-        res.end(JSON.stringify({ message: error.message }));
-    } else if (error.message === ErrorMessages.USER_NOT_VALID_ID) {
+        return;
+    }
+
+    if (error instanceof BadRequestError || error.name === 'BadRequestError') {
         res.writeHead(httpStatusCodes.BAD_REQUEST, RequestHeaders);
         res.end(JSON.stringify({ message: error.message }));
-    } else if (error.message === ErrorMessages.USER_NOT_VALID_DATA) {
-        res.writeHead(httpStatusCodes.BAD_REQUEST, RequestHeaders);
-        res.end(JSON.stringify({ message: error.message }));
-    } else if (error.message === ErrorMessages.NOT_VALID_HEADERS) {
-        res.writeHead(httpStatusCodes.BAD_REQUEST, RequestHeaders);
-        res.end(JSON.stringify({ message: error.message }));
-    } else {
+        return;
+    }
+
+    if (error instanceof ServerError || error.name === 'ServerError') {
         res.writeHead(httpStatusCodes.INTERNAL_SERVER_ERROR, RequestHeaders);
         res.end(JSON.stringify({ message: ErrorMessages.SERVER_ERROR }));
+        return;
     }
+
+    res.writeHead(httpStatusCodes.INTERNAL_SERVER_ERROR, RequestHeaders);
+    res.end(JSON.stringify({ message: ErrorMessages.SERVER_ERROR }));
+    return;
 };
 
 export const ResponseHandler = (res: ServerResponse, statusCodes: httpStatusCodes, data: any): void => {

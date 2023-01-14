@@ -1,5 +1,6 @@
 import { IncomingMessage } from 'http';
 import { ErrorMessages } from '../responses';
+import { BadRequestError } from '../responses';
 
 export class Request extends IncomingMessage {
     private body: string | undefined;
@@ -14,7 +15,7 @@ export class Request extends IncomingMessage {
 
     public getJsonBody(): Object {
         if (!this.body?.length) {
-            throw new Error(ErrorMessages.USER_NOT_VALID_DATA);
+            throw new BadRequestError(ErrorMessages.USER_NOT_VALID_DATA);
         }
         
         return JSON.parse(this.body);

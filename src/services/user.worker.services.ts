@@ -5,20 +5,23 @@ import { IUser, UpdateArgs, User } from '../entities';
 import { validate } from 'uuid';
 import { ErrorMessages } from '../responses';
 import { StoreActions } from '../store';
+import { ServerError } from '../responses';
 
 export class UserWorkerService implements IUserService {
-    private async sendCommandToMasterProcess(method: StoreActions, parameters: WorkerParam[] = []): Promise<any> {
+    private async sendCommandToMasterProcess(methodToMaster: StoreActions, parameters: WorkerParam[] = []): Promise<any> {
         return await new Promise((resolve, reject) => {
-            process.send!({ method, parameters });
+            process.send!({ method: methodToMaster, parameters });
 
             cluster.worker!.once('message', (message) => {
-                if (message.method != method) {
-                    reject(new Error(ErrorMessages.SERVER_ERROR));
+                if (message.method != methodToMaster) {
+                    reject(new ServerError(ErrorMessages.SERVER_ERROR));
                 } else if (message.error) {
-                    reject(new Error(message.error));
+                    const error = new Error(message.error.message);
+                    error.name = message.error.name;
+                    reject(error);
                 } else {
                     resolve(message.data);
-                } 
+                }
             });
         });
     }

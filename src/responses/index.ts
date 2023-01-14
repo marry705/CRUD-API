@@ -5,3 +5,9 @@ export {
     ResponseHandler,
     ErrorHandler
 } from './response';
+
+export { NotFoundError } from './notFoundError';
+
+export { BadRequestError } from './badRequestError';
+
+export { ServerError } from './serverError';

@@ -6,6 +6,7 @@ import { ErrorHandler, ErrorMessages } from '../responses';
 import { Request } from '../requests';
 import { Store, StoreActions } from '../store';
 import { RequestListenerHandler } from './types';
+import { BadRequestError } from '../responses';
 
 export class Server {
     private readonly router: Router;
@@ -39,16 +40,17 @@ export class Server {
                 if (typeof this.store[(message.method as StoreActions)] === 'function') {
                     try {
                         const result = await (this.store[message.method as StoreActions] as Function)(...message.parameters);
-                        console.log(result)
                         cluster.workers[id]?.send({
                             method: message.method,
                             data: result
                         });
                     } catch (error) {
-                        console.log(error);
                         cluster.workers[id]?.send({
                             method: message.method,
-                            error: typeof error
+                            error: {
+                                name: (error as Error).name,
+                                message: (error as Error).message
+                            }
                         });
                     }
                 } else {
@@ -63,7 +65,7 @@ export class Server {
             const nextPort = this.getNextPort(port);
 
             if (!mainRequest.url) {
-                throw new Error(ErrorMessages.NOT_VALID_URL);
+                throw new BadRequestError(ErrorMessages.NOT_VALID_URL);
             }
 
             const urlPath = new URL(`http://localhost:${nextPort}${mainRequest.url}`).href;
@@ -75,7 +77,7 @@ export class Server {
                         mainResponse.writeHead(workerResponse.statusCode || 200, workerResponse.headers);
                         workerResponse.pipe(mainResponse);
                     }).on('error', (error) => {
-                        ErrorHandler(error as Error, mainResponse);
+                        ErrorHandler(error, mainResponse);
                     });
 
             mainRequest.pipe(requestForWorker);

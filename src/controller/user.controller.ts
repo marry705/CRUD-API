@@ -1,6 +1,6 @@
 import { ServerResponse } from 'http';
 import { User, UpdateUserArgs } from '../entities';
-import { ErrorHandler, ErrorMessages, httpStatusCodes, ResponseHandler } from '../responses';
+import { ErrorHandler, ErrorMessages, httpStatusCodes, ResponseHandler, BadRequestError } from '../responses';
 import { IUserService, Service } from '../services';
 import { Request } from '../requests';
 import { IUserController } from './types';
@@ -29,7 +29,7 @@ export class UserController implements IUserController {
             const userId: string | undefined = url?.split('/')[3];
 
             if (!this.service.isIdValid(userId)) {
-                throw new Error(ErrorMessages.USER_NOT_VALID_ID);
+                throw new BadRequestError(ErrorMessages.USER_NOT_VALID_ID);
             }
 
             const user = await this.service.getById(userId!);
@@ -47,7 +47,7 @@ export class UserController implements IUserController {
             const userId: string | undefined = url?.split('/')[3];
 
             if (!this.service.isIdValid(userId)) {
-                throw new Error(ErrorMessages.USER_NOT_VALID_ID);
+                throw new BadRequestError(ErrorMessages.USER_NOT_VALID_ID);
             }
 
             await this.service.delete(userId!);
@@ -65,7 +65,7 @@ export class UserController implements IUserController {
             const userId: string | undefined = url?.split('/')[3];
 
             if (!this.service.isIdValid(userId)) {
-                throw new Error(ErrorMessages.USER_NOT_VALID_ID);
+                throw new BadRequestError(ErrorMessages.USER_NOT_VALID_ID);
             }
 
             const { username, age, hobbies } = req.getJsonBody() as UpdateUserArgs;
@@ -83,7 +83,7 @@ export class UserController implements IUserController {
             const { username, age, hobbies } = req.getJsonBody() as UpdateUserArgs;
 
             if (!this.service.isValidData(username, age, hobbies)) {
-                throw new Error(ErrorMessages.USER_NOT_VALID_DATA);
+                throw new BadRequestError(ErrorMessages.USER_NOT_VALID_DATA);
             }
 
             const user = await this.service.create(new User({ username, age, hobbies }));

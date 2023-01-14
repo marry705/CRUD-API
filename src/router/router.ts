@@ -2,6 +2,7 @@ import { ServerResponse } from 'http';
 import { IUserController, UserController } from '../controller';
 import { Request } from '../requests';
 import { ErrorHandler, ErrorMessages, RequestHeaders } from '../responses';
+import { BadRequestError, NotFoundError } from '../responses';
 
 export class Router {
     private readonly userController: IUserController;
@@ -32,11 +33,11 @@ export class Router {
             const { url, method, headers } = req;
             
             if (!url?.match(this.baseUrlReg) && !url?.match(this.userIDReg)) {
-                throw new Error(ErrorMessages.NOT_VALID_URL);
+                throw new NotFoundError(ErrorMessages.NOT_VALID_URL);
             }
 
             if (!(headers['content-type'] === RequestHeaders['content-Type'])) {
-                throw new Error(ErrorMessages.NOT_VALID_HEADERS);
+                throw new BadRequestError(ErrorMessages.NOT_VALID_HEADERS);
             }
 
             switch(method) {
@@ -61,7 +62,7 @@ export class Router {
                     break;
                 }
                 default: {
-                    throw new Error(ErrorMessages.NOT_VALID_URL);
+                    throw new NotFoundError(ErrorMessages.NOT_VALID_URL);
                 }
             }
         } catch (error) {

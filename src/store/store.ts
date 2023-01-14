@@ -1,5 +1,5 @@
 import { IUser, User } from '../entities';
-import { ErrorMessages } from '../responses';
+import { ErrorMessages, NotFoundError } from '../responses';
 
 export class Store {
     private static instance: Store;
@@ -33,7 +33,7 @@ export class Store {
             const userIndex = this.users.findIndex((user) => user.id === id);
 
             if (userIndex === -1) {
-                reject(new Error(ErrorMessages.USER_NOT_FOUND));
+                reject(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
             } else {
                 resolve(this.users[userIndex]);
             }
@@ -53,10 +53,9 @@ export class Store {
             const userIndex = this.users.findIndex((user) => user.id === updatedUser.id);
 
             if (userIndex === -1) {
-                reject(new Error(ErrorMessages.USER_NOT_FOUND));
+                reject(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
             } else {
                 this.users[userIndex].update(updatedUser);
-
                 resolve(updatedUser);
             }
         });
@@ -67,10 +66,9 @@ export class Store {
             const userIndex = this.users.findIndex((user) => user.id === id);
 
             if (userIndex === -1) {
-                reject(new Error(ErrorMessages.USER_NOT_FOUND));
+                reject(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
             } else {
                 this.users.splice(userIndex, 1);
-
                 resolve();
             }
         });
