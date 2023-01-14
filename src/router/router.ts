@@ -1,8 +1,13 @@
 import { ServerResponse } from 'http';
 import { IUserController, UserController } from '../controller';
 import { Request } from '../requests';
-import { ErrorHandler, ErrorMessages, RequestHeaders } from '../responses';
-import { BadRequestError, NotFoundError } from '../responses';
+import {
+    ErrorHandler,
+    ErrorMessages,
+    RequestHeaders,
+    BadRequestError,
+    NotFoundError
+} from '../responses';
 
 export class Router {
     private readonly userController: IUserController;

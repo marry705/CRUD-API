@@ -1,11 +1,10 @@
 import process from 'process';
 import cluster from 'cluster';
-import { IUserService, WorkerParam } from './types';
-import { IUser, UpdateArgs, User } from '../entities';
 import { validate } from 'uuid';
-import { ErrorMessages } from '../responses';
+import { IUser, UpdateArgs, User } from '../entities';
+import { ErrorMessages, ServerError } from '../responses';
 import { StoreActions } from '../store';
-import { ServerError } from '../responses';
+import { IUserService, WorkerParam } from './types';
 
 export class UserWorkerService implements IUserService {
     private async sendCommandToMasterProcess(methodToMaster: StoreActions, parameters: WorkerParam[] = []): Promise<any> {

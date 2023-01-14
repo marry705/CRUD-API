@@ -1,6 +1,6 @@
+import { validate } from 'uuid';
 import { IUser, UpdateArgs, User } from '../entities';
 import { Store } from '../store';
-import { validate } from 'uuid';
 import { IUserService } from './types';
 
 export class UserService implements IUserService {

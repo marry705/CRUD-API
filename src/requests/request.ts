@@ -1,6 +1,5 @@
 import { IncomingMessage } from 'http';
-import { ErrorMessages } from '../responses';
-import { BadRequestError } from '../responses';
+import { ErrorMessages, BadRequestError } from '../responses';
 
 export class Request extends IncomingMessage {
     private body: string | undefined;

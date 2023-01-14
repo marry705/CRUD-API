@@ -2,11 +2,10 @@ import cluster, { isMaster, isWorker } from 'cluster';
 import { createServer, request, ServerResponse } from 'http';
 import { cpus } from 'os';
 import { Router } from '../router';
-import { ErrorHandler, ErrorMessages } from '../responses';
+import { ErrorHandler, ErrorMessages, BadRequestError } from '../responses';
 import { Request } from '../requests';
 import { Store, StoreActions } from '../store';
 import { RequestListenerHandler } from './types';
-import { BadRequestError } from '../responses';
 
 export class Server {
     private readonly router: Router;
