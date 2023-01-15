@@ -12,7 +12,7 @@ export enum httpStatusCodes {
     INTERNAL_SERVER_ERROR = 500,
 }
 
-export const ErrorMessages = {
+export const ErrorMessages: Record<string, string> = {
     USER_NOT_FOUND: 'There is no user with this id.',
     USER_NOT_VALID_ID: 'You are accessing a not valid user id.',
     USER_NOT_VALID_DATA: 'You are accessing a not valid user data.',
@@ -21,7 +21,7 @@ export const ErrorMessages = {
     SERVER_ERROR: 'There is a tech error.',
 };
 
-export const RequestHeaders = {
+export const RequestHeaders: Record<string, string> = {
     'content-Type': 'application/json',
 };
 
@@ -49,7 +49,7 @@ export const ErrorHandler = (error: Error, res: ServerResponse): void => {
     return;
 };
 
-export const ResponseHandler = (res: ServerResponse, statusCodes: httpStatusCodes, data: any): void => {
+export const ResponseHandler = (res: ServerResponse, statusCodes: httpStatusCodes, data?: any): void => {
     res.writeHead(statusCodes, RequestHeaders);
     res.end(JSON.stringify(data));
-};
+};  

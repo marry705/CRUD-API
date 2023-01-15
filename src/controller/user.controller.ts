@@ -52,7 +52,7 @@ export class UserController implements IUserController {
 
             await this.service.delete(userId!);
 
-            ResponseHandler(res, httpStatusCodes.NO_CONTENT, { 'message': 'User was removed.' });
+            ResponseHandler(res, httpStatusCodes.NO_CONTENT);
         } catch(error) {
             ErrorHandler(error as Error, res);
         }
