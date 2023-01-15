@@ -22,7 +22,7 @@ export const ErrorMessages: Record<string, string> = {
 };
 
 export const RequestHeaders: Record<string, string> = {
-    'content-Type': 'application/json',
+    'content-type': 'application/json',
 };
 
 export const ErrorHandler = (error: Error, res: ServerResponse): void => {

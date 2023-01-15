@@ -41,7 +41,7 @@ export class Router {
                 throw new NotFoundError(ErrorMessages.NOT_VALID_URL);
             }
 
-            if (!(headers['content-type'] === RequestHeaders['content-Type'])) {
+            if (!(headers['content-type'] === RequestHeaders['content-type'])) {
                 throw new BadRequestError(ErrorMessages.NOT_VALID_HEADERS);
             }
 
