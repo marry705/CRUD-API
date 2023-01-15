@@ -47,6 +47,26 @@ describe('GET/users', () => {
             message: ErrorMessages.USER_NOT_VALID_ID,
         });
     });
+
+    it('should return user and 200 code', async () => {
+        const userData: UpdateUserArgs = {
+            username: 'Marry',
+            age: 25,
+            hobbies: ['hobby1', 'hobby2', 'hobby3'],
+        };
+
+        const { body: user } = await testRequest.post('/api/users')
+            .set(RequestHeaders)
+            .send(userData);
+
+        const { status, body } = await testRequest.get(`/api/users/${user.id}`).set(RequestHeaders);
+
+        expect(status).toEqual(httpStatusCodes.OK);
+        expect(body.id).toEqual(user.id);
+        expect(body.username).toEqual(userData.username);
+        expect(body.age).toEqual(userData.age);
+        expect(body.hobbies).toEqual(userData.hobbies);
+    });
 });
 
 describe('POST/users', () => {
