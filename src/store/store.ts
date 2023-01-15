@@ -23,7 +23,11 @@ export class Store {
     }
 
     public async clear(): Promise<void> {
-        this.setState([]);
+        return await new Promise((resolve) => {
+            this.setState([]);
+
+            resolve();
+        });
     }
     
     public async getAll(): Promise<IUser[]> { 
