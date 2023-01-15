@@ -21,6 +21,10 @@ export class Store {
     private setState(newState: IUser[]): void {
         this.users = [...newState];
     }
+
+    public async clear(): Promise<void> {
+        this.setState([]);
+    }
     
     public async getAll(): Promise<IUser[]> { 
         return await new Promise((resolve) => {
@@ -56,6 +60,7 @@ export class Store {
                 reject(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
             } else {
                 this.users[userIndex].update(updatedUser);
+
                 resolve(updatedUser);
             }
         });
@@ -69,6 +74,7 @@ export class Store {
                 reject(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
             } else {
                 this.users.splice(userIndex, 1);
+
                 resolve();
             }
         });

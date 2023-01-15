@@ -30,7 +30,8 @@ If everything goes well, then a `dist` folder should appear and message `🚀 Se
 If everything goes well, then a message `🚀 Server ready on MAIN_PORT` and `Worker NUMBER_OF_WORKER is now connected to http://localhost:{WORKER_PORT}` should appear in the console. 
 
 # TESTING 
-You can use, for example, `Postman` to test API. 
+You can use, for example, `Postman` to test API.
+Remember about request headers. You need `'content-type': 'application/json'`.
 ```
 GET http://localhost:MAIN_PORT/api/users
 
