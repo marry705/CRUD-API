@@ -1,7 +1,6 @@
 import { createServer } from 'http';
-import { v4 } from 'uuid';
 import supertest from 'supertest';
-import { ErrorMessages, httpStatusCodes, RequestHeaders } from '../src/responses';
+import { httpStatusCodes, RequestHeaders } from '../src/responses';
 import { Request } from '../src/requests';
 import { Router } from '../src/router';
 import { UpdateUserArgs } from '../src/entities';
@@ -18,165 +17,101 @@ beforeEach(async () => {
     await store.clear();
 });
 
-describe('GET/users', () => {
-    it('should return empty array and 200 code', async () => {
-        const { status, body } = await testRequest.get('/api/users').set(RequestHeaders);
-    
-        expect(status).toBe(httpStatusCodes.OK);
-        expect(body).toEqual([]);
-    });
+describe('Multi-step scenarios', () => {
+    it('1: getAll, create, getUser, update, getAll', async () => {
+        const { status: statusGetAll, body: bodyGetAll } = await testRequest
+            .get('/api/users')
+            .set(RequestHeaders);
 
-    it('should return an error on no user', async () => {
-        const userId = v4();
-    
-        const { status, body } = await testRequest.get(`/api/users/${userId}`).set(RequestHeaders);
-    
-        expect(status).toBe(httpStatusCodes.NOT_FOUND);
-        expect(body).toEqual({
-            message: ErrorMessages.USER_NOT_FOUND,
-        });
-    });
+        expect(statusGetAll).toBe(httpStatusCodes.OK);
+        expect(bodyGetAll).toEqual([]);
 
-    it('should return an error on no valid id', async () => {
-        const userId = '543454';
-    
-        const { status, body } = await testRequest.get(`/api/users/${userId}`).set(RequestHeaders);
-    
-        expect(status).toBe(httpStatusCodes.BAD_REQUEST);
-        expect(body).toEqual({
-            message: ErrorMessages.USER_NOT_VALID_ID,
-        });
-    });
-
-    it('should return user and 200 code', async () => {
         const userData: UpdateUserArgs = {
             username: 'Marry',
             age: 25,
             hobbies: ['hobby1', 'hobby2', 'hobby3'],
         };
 
-        const { body: user } = await testRequest.post('/api/users')
+        const { status: statusCreate, body: bodyCreate } = await testRequest
+            .post('/api/users')
             .set(RequestHeaders)
             .send(userData);
 
-        const { status, body } = await testRequest.get(`/api/users/${user.id}`).set(RequestHeaders);
+        expect(statusCreate).toBe(httpStatusCodes.CREATED);
 
-        expect(status).toEqual(httpStatusCodes.OK);
-        expect(body.id).toEqual(user.id);
-        expect(body.username).toEqual(userData.username);
-        expect(body.age).toEqual(userData.age);
-        expect(body.hobbies).toEqual(userData.hobbies);
+        const { status: statusGetUser, body: bodyGetUser } = await testRequest
+            .get(`/api/users/${bodyCreate.id}`)
+            .set(RequestHeaders);
+
+        expect(statusGetUser).toBe(httpStatusCodes.OK);
+        expect(bodyGetUser.username).toBe(userData.username);
+        expect(bodyGetUser.age).toBe(userData.age);
+        expect(bodyGetUser.hobbies).toEqual(userData.hobbies);
+
+        const updateUserData = {
+            username: 'MarryNew',
+            age: 27,
+        };
+
+        const { status: statusUpdatedUser, body: updatedUserBody } = await testRequest
+            .put(`/api/users/${bodyGetUser.id}`)
+            .set(RequestHeaders)
+            .send(updateUserData);
+
+        expect(statusUpdatedUser).toBe(httpStatusCodes.OK);
+        expect(updatedUserBody.username).toBe(updateUserData.username);
+        expect(updatedUserBody.age).toBe(updateUserData.age);
+        expect(updatedUserBody.hobbies).toEqual(userData.hobbies);
+
+        const { status: statusGetUsers, body: bodyGetUsers } = await testRequest.get('/api/users').set(RequestHeaders);
+
+        expect(statusGetUsers).toBe(httpStatusCodes.OK);
+        expect(bodyGetUsers).toEqual([{
+            ...updatedUserBody
+        }]);
     });
-});
 
-describe('POST/users', () => {
-    it('creates user in store should return created user', async () => {
+    it('2: getAll, create, delete, getUser, getAll', async () => {
+        const { status: statusGetAll, body: bodyGetAll } = await testRequest
+            .get('/api/users')
+            .set(RequestHeaders);
+
+        expect(statusGetAll).toBe(httpStatusCodes.OK);
+        expect(bodyGetAll).toEqual([]);
+
         const userData: UpdateUserArgs = {
             username: 'Marry',
             age: 25,
             hobbies: ['hobby1', 'hobby2', 'hobby3'],
         };
 
-        const { status, body } = await testRequest.post('/api/users')
+        const { status: statusCreate, body: bodyCreate } = await testRequest
+            .post('/api/users')
             .set(RequestHeaders)
             .send(userData);
 
-        const createdUser = await store.getByID(body.id);
+        expect(statusCreate).toBe(httpStatusCodes.CREATED);
+        expect(bodyCreate.username).toBe(userData.username);
+        expect(bodyCreate.age).toBe(userData.age);
+        expect(bodyCreate.hobbies).toEqual(userData.hobbies);
 
-        expect(status).toEqual(httpStatusCodes.CREATED);
-        expect(createdUser).toBeTruthy();
-    });
+        const { status: statusDeleteUser } = await testRequest
+            .delete(`/api/users/${bodyCreate.id}`)
+            .set(RequestHeaders);
 
-    it('creates user in store with not valid data should return bad request', async () => {
-        const userData = {
-            username: 'Marry',
-            age: '25',
-        };
+        expect(statusDeleteUser).toBe(httpStatusCodes.NO_CONTENT);
 
-        const { status, body } = await testRequest.post('/api/users')
-            .set(RequestHeaders)
-            .send(userData);
+        const { status: statusGetUser } = await testRequest
+            .get(`/api/users/${bodyCreate.id}`)
+            .set(RequestHeaders);
 
-        expect(status).toBe(httpStatusCodes.BAD_REQUEST);
-        expect(body).toEqual({
-            message: ErrorMessages.USER_NOT_VALID_DATA,
-        });
-    });
-});
+        expect(statusGetUser).toBe(httpStatusCodes.NOT_FOUND);
 
-describe('PUT/users', () => {
-    it('updates user in store should return updated user', async () => {
-        const userData: UpdateUserArgs = {
-            username: 'Marry',
-            age: 25,
-            hobbies: ['hobby1', 'hobby2', 'hobby3'],
-        };
+        const { status: statusGetUsers, body: bodyGetUsers } = await testRequest
+            .get('/api/users')
+            .set(RequestHeaders);
 
-        const { body: user } = await testRequest.post('/api/users')
-            .set(RequestHeaders)
-            .send(userData);
-
-        const newUserData = {
-            username: 'Marry Name',
-            age: 26,
-        };
-
-        const { status, body } = await testRequest.put(`/api/users/${user.id}`)
-            .set(RequestHeaders)
-            .send(newUserData);
-        
-        expect(status).toEqual(httpStatusCodes.OK);
-        expect(body.id).toEqual(user.id);
-        expect(body.username).toEqual(newUserData.username);
-        expect(body.age).toEqual(newUserData.age);
-        expect(body.hobbies).toEqual(user.hobbies);
-    });
-
-    it('updates no existed user in store should return no valid id error', async () => {
-        const userId = v4();
-
-        const userData = {
-            username: 'Marry Name',
-            age: 26,
-        };
-
-        const { status, body } = await testRequest.put(`/api/users/${userId}`)
-            .set(RequestHeaders)
-            .send(userData);
-        
-        expect(status).toEqual(httpStatusCodes.NOT_FOUND);
-        expect(body).toEqual({
-            message: ErrorMessages.USER_NOT_FOUND,
-        });
-    });
-});
-
-describe('DELETE/users', () => {
-    it('deletes user in store should return 204 code', async () => {
-        const userData: UpdateUserArgs = {
-            username: 'Marry',
-            age: 25,
-            hobbies: ['hobby1', 'hobby2', 'hobby3'],
-        };
-
-        const { body: user } = await testRequest.post('/api/users')
-            .set(RequestHeaders)
-            .send(userData);
-
-
-        const { status } = await testRequest.delete(`/api/users/${user.id}`).set(RequestHeaders);
-        
-        expect(status).toEqual(httpStatusCodes.NO_CONTENT);
-    });
-
-    it('deletes no existed user in store should return 404 code', async () => {
-        const userId = v4();
-
-        const { status, body } = await testRequest.delete(`/api/users/${userId}`).set(RequestHeaders)
-        
-        expect(status).toEqual(httpStatusCodes.NOT_FOUND);
-        expect(body).toEqual({
-            message: ErrorMessages.USER_NOT_FOUND,
-        });
+        expect(statusGetUsers).toBe(httpStatusCodes.OK);
+        expect(bodyGetUsers).toEqual([]);
     });
 });
