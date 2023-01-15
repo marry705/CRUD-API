@@ -57,6 +57,6 @@ Structure of the object to update a user
     "id": "userId"
     "username": "MarryNewName",
     "age": 21,
-    "hobbies": [“hobbie1","hobbie2", "newHobbie"]
+    "hobbies": [“hobbie1", "hobbie2", "newHobbie"]
 }
 ```

@@ -7,7 +7,7 @@ import { StoreActions } from '../store';
 import { IUserService, WorkerParam } from './types';
 
 export class UserWorkerService implements IUserService {
-    private async sendCommandToMasterProcess(methodToMaster: StoreActions, parameters: WorkerParam[] = []): Promise<any> {
+    private async sendCommandToMasterProcess<T>(methodToMaster: StoreActions, parameters: WorkerParam[] = []): Promise<T> {
         return await new Promise((resolve, reject) => {
             process.send!({ method: methodToMaster, parameters });
 
@@ -25,7 +25,7 @@ export class UserWorkerService implements IUserService {
         });
     }
 
-    public isValidData(username?: any, age?: any, hobbies?: any): boolean {
+    public isValidData(username?: unknown, age?: unknown, hobbies?: unknown): boolean {
         return typeof username === 'string' && typeof age === 'number' && Array.isArray(hobbies);
     }
 
@@ -34,25 +34,25 @@ export class UserWorkerService implements IUserService {
     }
 
     public async getAll(): Promise<IUser[]> {
-        return await this.sendCommandToMasterProcess('getAll');
+        return await this.sendCommandToMasterProcess<IUser[]>('getAll');
     }
 
     public async getById(userId: string): Promise<IUser> {
-        return await this.sendCommandToMasterProcess('getByID', [userId]);
+        return await this.sendCommandToMasterProcess<IUser>('getByID', [userId]);
     }
 
     public async delete(userId: string): Promise<void> {
-        await this.sendCommandToMasterProcess('remove', [userId]);
+        await this.sendCommandToMasterProcess<void>('remove', [userId]);
     }
 
     public async create(user: IUser): Promise<IUser> {
-        return await this.sendCommandToMasterProcess('create', [user]);
+        return await this.sendCommandToMasterProcess<IUser>('create', [user]);
     }
 
     public async update(userForUpdate: UpdateArgs): Promise<IUser> {
-        const oldUser = await this.sendCommandToMasterProcess('getByID', [userForUpdate.id]);
+        const oldUser = await this.sendCommandToMasterProcess<IUser>('getByID', [userForUpdate.id]);
 
-        return await this.sendCommandToMasterProcess('update', [new User({
+        return await this.sendCommandToMasterProcess<IUser>('update', [new User({
             id: userForUpdate.id,
             username: userForUpdate.username || oldUser.username,
             age: userForUpdate.age || oldUser.age,

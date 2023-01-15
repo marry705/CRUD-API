@@ -10,7 +10,7 @@ export class UserService implements IUserService {
         this.store = Store.getInstance();
     }
 
-    public isValidData(username?: any, age?: any, hobbies?: any): boolean {
+    public isValidData(username?: unknown, age?: unknown, hobbies?: unknown): boolean {
         return (typeof username === 'string') && (typeof age === 'number') && Array.isArray(hobbies);
     }
 

@@ -49,7 +49,7 @@ export const ErrorHandler = (error: Error, res: ServerResponse): void => {
     return;
 };
 
-export const ResponseHandler = (res: ServerResponse, statusCodes: httpStatusCodes, data?: any): void => {
+export const ResponseHandler = (res: ServerResponse, statusCodes: httpStatusCodes, data?: Record<string, any>): void => {
     res.writeHead(statusCodes, RequestHeaders);
     res.end(JSON.stringify(data));
 };  
