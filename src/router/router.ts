@@ -8,13 +8,10 @@ import {
     BadRequestError,
     NotFoundError
 } from '../responses';
+import { BASE_URL_REG, USER_ID_REG } from './constants';
 
 export class Router {
     private readonly userController: IUserController;
-
-    private readonly userIDReg = /^\/api\/users\/[a-z0-9\-]+\/?$/;
-
-    private readonly baseUrlReg = /^\/api\/users\/?$/;
     
     constructor() {
         this.userController = new UserController();
@@ -37,7 +34,7 @@ export class Router {
 
             const { url, method, headers } = req;
             
-            if (!url?.match(this.baseUrlReg) && !url?.match(this.userIDReg)) {
+            if (!url?.match(BASE_URL_REG) && !url?.match(USER_ID_REG)) {
                 throw new NotFoundError(ErrorMessages.NOT_VALID_URL);
             }
 
@@ -47,7 +44,7 @@ export class Router {
 
             switch(method) {
                 case 'GET': {
-                    if (url?.match(this.userIDReg)) {
+                    if (url?.match(USER_ID_REG)) {
                         await this.userController.getById(req, res);
                     } else {
                         await this.userController.getAll(req, res);

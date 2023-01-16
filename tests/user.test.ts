@@ -63,7 +63,9 @@ describe('Multi-step scenarios', () => {
         expect(updatedUserBody.age).toBe(updateUserData.age);
         expect(updatedUserBody.hobbies).toEqual(userData.hobbies);
 
-        const { status: statusGetUsers, body: bodyGetUsers } = await testRequest.get('/api/users').set(RequestHeaders);
+        const { status: statusGetUsers, body: bodyGetUsers } = await testRequest
+            .get('/api/users')
+            .set(RequestHeaders);
 
         expect(statusGetUsers).toBe(httpStatusCodes.OK);
         expect(bodyGetUsers).toEqual([{

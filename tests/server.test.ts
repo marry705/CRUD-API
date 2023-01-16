@@ -20,7 +20,9 @@ beforeEach(async () => {
 
 describe('Server testing', () => {
     it('request to non-existing endpoint should return 404 code', async () => {
-        const { status, body } = await testRequest.get('/invalid').set(RequestHeaders);
+        const { status, body } = await testRequest
+            .get('/invalid')
+            .set(RequestHeaders);
     
         expect(status).toBe(httpStatusCodes.NOT_FOUND);
         expect(body).toEqual({
@@ -31,7 +33,9 @@ describe('Server testing', () => {
 
 describe('GET/users', () => {
     it('should return empty array and 200 code', async () => {
-        const { status, body } = await testRequest.get('/api/users').set(RequestHeaders);
+        const { status, body } = await testRequest
+            .get('/api/users')
+            .set(RequestHeaders);
     
         expect(status).toBe(httpStatusCodes.OK);
         expect(body).toEqual([]);
@@ -40,7 +44,9 @@ describe('GET/users', () => {
     it('should return an error on no user', async () => {
         const userId = v4();
     
-        const { status, body } = await testRequest.get(`/api/users/${userId}`).set(RequestHeaders);
+        const { status, body } = await testRequest
+            .get(`/api/users/${userId}`)
+            .set(RequestHeaders);
     
         expect(status).toBe(httpStatusCodes.NOT_FOUND);
         expect(body).toEqual({
@@ -51,7 +57,9 @@ describe('GET/users', () => {
     it('should return an error on no valid id', async () => {
         const userId = '543454';
     
-        const { status, body } = await testRequest.get(`/api/users/${userId}`).set(RequestHeaders);
+        const { status, body } = await testRequest
+            .get(`/api/users/${userId}`)
+            .set(RequestHeaders);
     
         expect(status).toBe(httpStatusCodes.BAD_REQUEST);
         expect(body).toEqual({
@@ -66,11 +74,16 @@ describe('GET/users', () => {
             hobbies: ['hobby1', 'hobby2', 'hobby3'],
         };
 
-        const { body: user } = await testRequest.post('/api/users')
+        const { status: statusUpdateUser, body: user } = await testRequest
+            .post('/api/users')
             .set(RequestHeaders)
             .send(userData);
+        
+        expect(statusUpdateUser).toEqual(httpStatusCodes.CREATED);
 
-        const { status, body } = await testRequest.get(`/api/users/${user.id}`).set(RequestHeaders);
+        const { status, body } = await testRequest
+            .get(`/api/users/${user.id}`)
+            .set(RequestHeaders);
 
         expect(status).toEqual(httpStatusCodes.OK);
         expect(body.id).toEqual(user.id);
@@ -88,7 +101,8 @@ describe('POST/users', () => {
             hobbies: ['hobby1', 'hobby2', 'hobby3'],
         };
 
-        const { status, body } = await testRequest.post('/api/users')
+        const { status, body } = await testRequest
+            .post('/api/users')
             .set(RequestHeaders)
             .send(userData);
 
@@ -104,7 +118,8 @@ describe('POST/users', () => {
             age: '25',
         };
 
-        const { status, body } = await testRequest.post('/api/users')
+        const { status, body } = await testRequest
+            .post('/api/users')
             .set(RequestHeaders)
             .send(userData);
 
@@ -123,7 +138,8 @@ describe('PUT/users', () => {
             hobbies: ['hobby1', 'hobby2', 'hobby3'],
         };
 
-        const { body: user } = await testRequest.post('/api/users')
+        const { body: user } = await testRequest
+            .post('/api/users')
             .set(RequestHeaders)
             .send(userData);
 
@@ -132,10 +148,12 @@ describe('PUT/users', () => {
             age: 26,
         };
 
-        const { status, body } = await testRequest.put(`/api/users/${user.id}`)
+        const { status, body } = await testRequest
+            .put(`/api/users/${user.id}`)
             .set(RequestHeaders)
             .send(newUserData);
         
+        console.log(status, body);
         expect(status).toEqual(httpStatusCodes.OK);
         expect(body.id).toEqual(user.id);
         expect(body.username).toEqual(newUserData.username);
@@ -151,7 +169,8 @@ describe('PUT/users', () => {
             age: 26,
         };
 
-        const { status, body } = await testRequest.put(`/api/users/${userId}`)
+        const { status, body } = await testRequest
+            .put(`/api/users/${userId}`)
             .set(RequestHeaders)
             .send(userData);
         
@@ -170,12 +189,14 @@ describe('DELETE/users', () => {
             hobbies: ['hobby1', 'hobby2', 'hobby3'],
         };
 
-        const { body: user } = await testRequest.post('/api/users')
+        const { body: user } = await testRequest
+            .post('/api/users')
             .set(RequestHeaders)
             .send(userData);
 
-
-        const { status } = await testRequest.delete(`/api/users/${user.id}`).set(RequestHeaders);
+        const { status } = await testRequest
+            .delete(`/api/users/${user.id}`)
+            .set(RequestHeaders);
         
         expect(status).toEqual(httpStatusCodes.NO_CONTENT);
     });
@@ -183,7 +204,9 @@ describe('DELETE/users', () => {
     it('deletes no existed user in store should return 404 code', async () => {
         const userId = v4();
 
-        const { status, body } = await testRequest.delete(`/api/users/${userId}`).set(RequestHeaders)
+        const { status, body } = await testRequest
+            .delete(`/api/users/${userId}`)
+            .set(RequestHeaders)
         
         expect(status).toEqual(httpStatusCodes.NOT_FOUND);
         expect(body).toEqual({

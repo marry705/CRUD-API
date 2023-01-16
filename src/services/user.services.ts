@@ -1,4 +1,3 @@
-import { validate } from 'uuid';
 import { IUser, UpdateArgs, User } from '../entities';
 import { Store } from '../store';
 import { IUserService } from './types';
@@ -8,14 +7,6 @@ export class UserService implements IUserService {
 
     constructor() {
         this.store = Store.getInstance();
-    }
-
-    public isValidData(username?: unknown, age?: unknown, hobbies?: unknown): boolean {
-        return (typeof username === 'string') && (typeof age === 'number') && Array.isArray(hobbies);
-    }
-
-    public isIdValid(userId?: string): boolean {
-        return !userId ? false : validate(userId);
     }
 
     public async getAll(): Promise<IUser[]> {
@@ -35,9 +26,9 @@ export class UserService implements IUserService {
 
         return await this.store.update(new User({
             id: userData.id,
-            username: userData.username || oldUser.username,
-            age: userData.age || oldUser.age,
-            hobbies: userData.hobbies || oldUser.hobbies,
+            username: userData.username ?? oldUser.username,
+            age: userData.age ?? oldUser.age,
+            hobbies: userData.hobbies ?? oldUser.hobbies,
         }));
     }
 

@@ -1,6 +1,5 @@
 import process from 'process';
 import cluster from 'cluster';
-import { validate } from 'uuid';
 import { IUser, UpdateArgs, User } from '../entities';
 import { ErrorMessages, ServerError } from '../responses';
 import { StoreActions } from '../store';
@@ -23,14 +22,6 @@ export class UserWorkerService implements IUserService {
                 }
             });
         });
-    }
-
-    public isValidData(username?: unknown, age?: unknown, hobbies?: unknown): boolean {
-        return typeof username === 'string' && typeof age === 'number' && Array.isArray(hobbies);
-    }
-
-    public isIdValid(userId?: string): boolean {
-        return !userId ? false : validate(userId);
     }
 
     public async getAll(): Promise<IUser[]> {

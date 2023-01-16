@@ -2,10 +2,11 @@ import cluster, { isMaster, isWorker } from 'cluster';
 import { createServer, request, ServerResponse } from 'http';
 import { cpus } from 'os';
 import { Router } from '../router';
-import { ErrorHandler, ErrorMessages, BadRequestError } from '../responses';
+import { ErrorHandler, ErrorMessages, BadRequestError, httpStatusCodes } from '../responses';
 import { Request } from '../requests';
 import { Store, StoreActions } from '../store';
 import { RequestListenerHandler } from './types';
+import { DEFAULT_PORT } from './constants';
 
 export class Server {
     private readonly router: Router;
@@ -73,7 +74,7 @@ export class Server {
                         headers: mainRequest.headers,
                         method: mainRequest.method,
                     }, (workerResponse) => {
-                        mainResponse.writeHead(workerResponse.statusCode || 200, workerResponse.headers);
+                        mainResponse.writeHead(workerResponse.statusCode ?? httpStatusCodes.OK, workerResponse.headers);
                         workerResponse.pipe(mainResponse);
                     }).on('error', (error) => {
                         ErrorHandler(error, mainResponse);
@@ -83,7 +84,7 @@ export class Server {
         };
     };  
 
-    private startServer = (port = 3000, callback: RequestListenerHandler, message?: string): void => {
+    private startServer = (port = DEFAULT_PORT, callback: RequestListenerHandler, message?: string): void => {
         const app = createServer(
             { IncomingMessage: Request },
             callback
@@ -95,7 +96,7 @@ export class Server {
         );
     };
 
-    public startServerWithoutWorkers = (port = 3000): void => {
+    public startServerWithoutWorkers = (port = DEFAULT_PORT): void => {
         this.startServer(
             port,
             this.router.requestHandler,
@@ -103,7 +104,7 @@ export class Server {
         );
     };
 
-    public startServerWithWorkers = (port = 3000): void => {
+    public startServerWithWorkers = (port = DEFAULT_PORT): void => {
         if (isMaster) {  
             for (let index = 0; index < this.cpusCount; index += 1) {
                 cluster.fork();

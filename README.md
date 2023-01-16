@@ -11,7 +11,7 @@ For example:
 ```
 MAIN_PORT=4000
 ```
-3. rename `.env.template` on `.env`
+3. copy and rename `.env.template` on `.env`
 
 4. `npm i`
 
@@ -48,13 +48,12 @@ Structure of the object to create a new user
 {
     "username": "Marry",
     "age": 20,
-    "hobbies": [“hobbie1","hobbie2"]
+    "hobbies": [“hobbie1", "hobbie2"]
 }
 ```
-Structure of the object to update a user
+Structure of the object to update a user. 
 ```
 {
-    "id": "userId"
     "username": "MarryNewName",
     "age": 21,
     "hobbies": [“hobbie1", "hobbie2", "newHobbie"]

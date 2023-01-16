@@ -6,8 +6,6 @@ export interface IUserService {
     create: (user: IUser) => Promise<IUser>,
     update: (userForUpdate: UpdateArgs) => Promise<IUser>,
     delete: (userId: string) => Promise<void>,
-    isIdValid: (userId?: string) => boolean,
-    isValidData: (username?: unknown, age?: unknown, hobbies?: unknown) => boolean,
 }
 
 export type WorkerParam = string | IUser | UpdateArgs;

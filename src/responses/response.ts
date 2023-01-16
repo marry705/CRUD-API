@@ -29,23 +29,27 @@ export const ErrorHandler = (error: Error, res: ServerResponse): void => {
     if (error instanceof NotFoundError || error.name === 'NotFoundError') {
         res.writeHead(httpStatusCodes.NOT_FOUND, RequestHeaders);
         res.end(JSON.stringify({ message: error.message }));
+
         return;
     }
 
     if (error instanceof BadRequestError || error.name === 'BadRequestError') {
         res.writeHead(httpStatusCodes.BAD_REQUEST, RequestHeaders);
         res.end(JSON.stringify({ message: error.message }));
+
         return;
     }
 
     if (error instanceof ServerError || error.name === 'ServerError') {
         res.writeHead(httpStatusCodes.INTERNAL_SERVER_ERROR, RequestHeaders);
         res.end(JSON.stringify({ message: ErrorMessages.SERVER_ERROR }));
+
         return;
     }
 
     res.writeHead(httpStatusCodes.INTERNAL_SERVER_ERROR, RequestHeaders);
     res.end(JSON.stringify({ message: ErrorMessages.SERVER_ERROR }));
+    
     return;
 };
 
