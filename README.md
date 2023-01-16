@@ -5,13 +5,13 @@ https://github.com/AlreadyBored/nodejs-assignments/blob/main/assignments/crud-ap
 
 1. git clone this repository
 
-2. add data on `.env.template`.
+2. checkout on `dev` branch
 
-For example:
+3. copy and rename `.env.template` file as `.env`. Add data on it.
+
 ```
 MAIN_PORT=4000
 ```
-3. copy and rename `.env.template` on `.env`
 
 4. `npm i`
 
@@ -31,7 +31,9 @@ If everything goes well, then a message `🚀 Server ready on MAIN_PORT` and `Wo
 
 # TESTING 
 You can use, for example, `Postman` to test API.
-Remember about request headers. You need `'content-type': 'application/json'`.
+
+!! Remember about request headers. You need `'content-type': 'application/json'`.
+
 ```
 GET http://localhost:MAIN_PORT/api/users
 
@@ -39,11 +41,15 @@ GET http://localhost:MAIN_PORT/api/users/{userId}
 
 POST http://localhost:MAIN_PORT/api/users
 
-PUT http://localhost:4000/api/users/{userId}
+PUT http://localhost:MAIN_PORT/api/users/{userId}
 
-DELETE http://localhost:4000/api/users/{userId}
+DELETE http://localhost:MAIN_PORT/api/users/{userId}
 ```
-Structure of the object to create a new user
+
+Structure of the body to create a new user.
+
+!! All fields are required.
+
 ```
 {
     "username": "Marry",
@@ -51,7 +57,9 @@ Structure of the object to create a new user
     "hobbies": [“hobbie1", "hobbie2"]
 }
 ```
-Structure of the object to update a user. 
+
+Structure of the body to update a user.
+
 ```
 {
     "username": "MarryNewName",
