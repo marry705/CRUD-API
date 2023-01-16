@@ -50,7 +50,7 @@ export class Store {
 
     public async create(user: IUser): Promise<IUser> {
         return await new Promise((resolve) => {
-            this.setState([...this.users, new User(user)]);
+            this.setState([...this.users, new User({...user})]);
 
             resolve(user);
         });
