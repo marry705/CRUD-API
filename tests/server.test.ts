@@ -153,7 +153,6 @@ describe('PUT/users', () => {
             .set(RequestHeaders)
             .send(newUserData);
         
-        console.log(status, body);
         expect(status).toEqual(httpStatusCodes.OK);
         expect(body.id).toEqual(user.id);
         expect(body.username).toEqual(newUserData.username);
