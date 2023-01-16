@@ -7,11 +7,17 @@ import { UpdateUserArgs } from '../src/entities';
 import { Store } from '../src/store';
 
 const router = new Router();
-const testRequest = supertest(createServer(
+const server = createServer(
     { IncomingMessage: Request },
     router.requestHandler
-));
+);
+
+const testRequest = supertest(server);
 const store = Store.getInstance();
+
+afterAll(() => {
+    server.close();
+});
 
 beforeEach(async () => {
     await store.clear();
