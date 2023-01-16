@@ -61,15 +61,9 @@ export class UserController implements IUserController {
 
         const { username, age, hobbies } = req.getJsonBody() as UpdateUserArgs;
 
-        if (username && !this.validation.isValidUserName(username)) {
-            throw new BadRequestError(ErrorMessages.USER_NOT_VALID_DATA);
-        }
-
-        if (age && !this.validation.isValidAge(age)) {
-            throw new BadRequestError(ErrorMessages.USER_NOT_VALID_DATA);
-        }
-
-        if (hobbies && !this.validation.isValidHobbies(hobbies)) {
+        if (username && !this.validation.isValidUserName(username) || 
+            age && !this.validation.isValidAge(age) ||
+            hobbies && !this.validation.isValidHobbies(hobbies)) {
             throw new BadRequestError(ErrorMessages.USER_NOT_VALID_DATA);
         }
 

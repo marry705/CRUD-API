@@ -34,18 +34,18 @@ export class Server {
         return port + this.nextPortIteration;
     };
 
-    private createStoreCommunicationWithWorkers = (): void => {
-        for (const id in cluster.workers) {
-            cluster.workers[id]?.on('message', async (message) => {
+    private createStoreSharing = (): void => {
+        for (const worker of Object.values(cluster.workers)) {
+            worker?.on('message', async (message) => {
                 if (typeof this.store[(message.method as StoreActions)] === 'function') {
                     try {
                         const result = await (this.store[message.method as StoreActions] as Function)(...message.parameters);
-                        cluster.workers[id]?.send({
+                        worker?.send({
                             method: message.method,
                             data: result
                         });
                     } catch (error) {
-                        cluster.workers[id]?.send({
+                        worker?.send({
                             method: message.method,
                             error: {
                                 name: (error as Error).name,
@@ -54,7 +54,7 @@ export class Server {
                         });
                     }
                 } else {
-                    cluster.workers[id]?.send({});
+                    worker?.send({});
                 }
             });
         }
@@ -110,7 +110,7 @@ export class Server {
                 cluster.fork();
             }
     
-            this.createStoreCommunicationWithWorkers();
+            this.createStoreSharing();
 
             this.startServer(
                 port,
