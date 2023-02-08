@@ -1,0 +1,1 @@
+export type StoreActions = 'getAll' | 'getByID' | 'create' | 'update' | 'remove';
